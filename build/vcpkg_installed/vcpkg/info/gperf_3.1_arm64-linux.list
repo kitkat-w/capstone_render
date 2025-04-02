@@ -1,0 +1,9 @@
+arm64-linux/
+arm64-linux/share/
+arm64-linux/share/gperf/
+arm64-linux/share/gperf/copyright
+arm64-linux/share/gperf/vcpkg.spdx.json
+arm64-linux/share/gperf/vcpkg_abi_info.txt
+arm64-linux/tools/
+arm64-linux/tools/gperf/
+arm64-linux/tools/gperf/gperf

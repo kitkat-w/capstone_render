@@ -1,0 +1,14 @@
+arm64-linux/
+arm64-linux/share/
+arm64-linux/share/vcpkg-tool-meson/
+arm64-linux/share/vcpkg-tool-meson/adjust-args.patch
+arm64-linux/share/vcpkg-tool-meson/adjust-python-dep.patch
+arm64-linux/share/vcpkg-tool-meson/copyright
+arm64-linux/share/vcpkg-tool-meson/meson-intl.patch
+arm64-linux/share/vcpkg-tool-meson/meson.template.in
+arm64-linux/share/vcpkg-tool-meson/remove-freebsd-pcfile-specialization.patch
+arm64-linux/share/vcpkg-tool-meson/vcpkg-port-config.cmake
+arm64-linux/share/vcpkg-tool-meson/vcpkg.spdx.json
+arm64-linux/share/vcpkg-tool-meson/vcpkg_abi_info.txt
+arm64-linux/share/vcpkg-tool-meson/vcpkg_configure_meson.cmake
+arm64-linux/share/vcpkg-tool-meson/vcpkg_install_meson.cmake

@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/a4/Desktop/capstone_render/build/cmake_install.cmake",
+		"/home/a4/Desktop/capstone_render/build/external/eos/cmake_install.cmake",
+		"/home/a4/Desktop/capstone_render/build/external/eos/examples/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

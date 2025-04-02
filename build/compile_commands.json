@@ -1,0 +1,44 @@
+[
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/home/a4/Desktop/capstone_render/external/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/include -isystem /usr/include/opencv4 -isystem /home/a4/Desktop/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -o CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o -c /home/a4/Desktop/capstone_render/src/depth_camera.cpp",
+  "file": "/home/a4/Desktop/capstone_render/src/depth_camera.cpp",
+  "output": "CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/home/a4/Desktop/capstone_render/external/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/include -isystem /usr/include/opencv4 -isystem /home/a4/Desktop/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -o CMakeFiles/UsARMirror.dir/src/main.cpp.o -c /home/a4/Desktop/capstone_render/src/main.cpp",
+  "file": "/home/a4/Desktop/capstone_render/src/main.cpp",
+  "output": "CMakeFiles/UsARMirror.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -I/home/a4/Desktop/capstone_render/external/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -std=gnu++17 -Wreturn-type -o CMakeFiles/facelandmark.dir/realsense_to_3d.cpp.o -c /home/a4/Desktop/capstone_render/realsense_to_3d.cpp",
+  "file": "/home/a4/Desktop/capstone_render/realsense_to_3d.cpp",
+  "output": "CMakeFiles/facelandmark.dir/realsense_to_3d.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -I/home/a4/Desktop/capstone_render/external/eos/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -std=c++17 -o external/eos/examples/CMakeFiles/fit-model-simple.dir/fit-model-simple.cpp.o -c /home/a4/Desktop/capstone_render/external/eos/examples/fit-model-simple.cpp",
+  "file": "/home/a4/Desktop/capstone_render/external/eos/examples/fit-model-simple.cpp",
+  "output": "external/eos/examples/CMakeFiles/fit-model-simple.dir/fit-model-simple.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -I/home/a4/Desktop/capstone_render/external/eos/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -std=c++17 -o external/eos/examples/CMakeFiles/fit-model.dir/fit-model.cpp.o -c /home/a4/Desktop/capstone_render/external/eos/examples/fit-model.cpp",
+  "file": "/home/a4/Desktop/capstone_render/external/eos/examples/fit-model.cpp",
+  "output": "external/eos/examples/CMakeFiles/fit-model.dir/fit-model.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -I/home/a4/Desktop/capstone_render/external/eos/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -std=c++17 -o external/eos/examples/CMakeFiles/fit-model-multi.dir/fit-model-multi.cpp.o -c /home/a4/Desktop/capstone_render/external/eos/examples/fit-model-multi.cpp",
+  "file": "/home/a4/Desktop/capstone_render/external/eos/examples/fit-model-multi.cpp",
+  "output": "external/eos/examples/CMakeFiles/fit-model-multi.dir/fit-model-multi.cpp.o"
+},
+{
+  "directory": "/home/a4/Desktop/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -I/home/a4/Desktop/capstone_render/external/eos/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/include -I/usr/include/eigen3 -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -std=c++17 -o external/eos/examples/CMakeFiles/generate-obj.dir/generate-obj.cpp.o -c /home/a4/Desktop/capstone_render/external/eos/examples/generate-obj.cpp",
+  "file": "/home/a4/Desktop/capstone_render/external/eos/examples/generate-obj.cpp",
+  "output": "external/eos/examples/CMakeFiles/generate-obj.dir/generate-obj.cpp.o"
+}
+]

@@ -1,0 +1,15 @@
+arm64-linux/
+arm64-linux/include/
+arm64-linux/include/EGL/
+arm64-linux/include/EGL/egl.h
+arm64-linux/include/EGL/eglext.h
+arm64-linux/include/EGL/eglplatform.h
+arm64-linux/include/KHR/
+arm64-linux/include/KHR/khrplatform.h
+arm64-linux/share/
+arm64-linux/share/egl-registry/
+arm64-linux/share/egl-registry/copyright
+arm64-linux/share/egl-registry/vcpkg.spdx.json
+arm64-linux/share/egl-registry/vcpkg_abi_info.txt
+arm64-linux/share/opengl/
+arm64-linux/share/opengl/egl.xml
