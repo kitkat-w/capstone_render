@@ -1,4 +1,4 @@
-# Install script for directory: /home/a4/Desktop/capstone_render/external/eos
+# Install script for directory: /home/a4/capstone_render/external/eos
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -43,46 +43,46 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/include/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/include/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/share/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/share/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/cereal" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/cereal/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/cereal" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/3rdparty/cereal/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/nanoflann/include" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/include/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/nanoflann/include" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/nanoflann" TYPE FILE FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/nanoflann/COPYING")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/nanoflann" TYPE FILE FILES "/home/a4/capstone_render/external/eos/3rdparty/nanoflann/COPYING")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/eigen3-nnls/src" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/src/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/eigen3-nnls/src" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src/")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/eigen3-nnls" TYPE FILE FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/eigen3-nnls/README.md")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/eigen3-nnls" TYPE FILE FILES "/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/README.md")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/toml11" TYPE DIRECTORY FILES "/home/a4/Desktop/capstone_render/external/eos/3rdparty/toml11/")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/3rdparty/toml11" TYPE DIRECTORY FILES "/home/a4/capstone_render/external/eos/3rdparty/toml11/")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/a4/Desktop/capstone_render/build/external/eos/examples/cmake_install.cmake")
+  include("/home/a4/capstone_render/build/external/eos/examples/cmake_install.cmake")
 
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/home/a4/Desktop/capstone_render/build/external/eos/install_local_manifest.txt"
+  file(WRITE "/home/a4/capstone_render/build/external/eos/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

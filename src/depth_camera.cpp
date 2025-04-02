@@ -23,6 +23,15 @@ DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
         height = state->viewportHeight;
 
         spdlog::info("RealSense camera started: width={}, height={}", width, height);
+    
+        detector = dlib::get_frontal_face_detector();
+        try {
+            dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> predictor;
+        } catch (dlib::serialization_error& e) {
+            throw std::runtime_error(std::string("Could not load landmark model: ") + e.what());
+        }
+        spdlog::info("Deserialized dlib predictor");
+        
     } catch (const rs2::error& e) {
         throw std::runtime_error(std::string("RealSense error: ") + e.what());
     }
@@ -59,17 +68,14 @@ void DepthCameraInput::captureLoop() {
         if (!impl) continue;
 
         if (impl->pipe.poll_for_frames(&impl->frames)) {
-            rs2::frame temp_color_frame, temp_depth_frame;
-            temp_color_frame = impl->frames.get_color_frame();
-            temp_depth_frame = impl->frames.get_depth_frame();
-            if (temp_color_frame) {
-                impl->color_frame = temp_color_frame;
-                impl->depth_frame = temp_depth_frame;
-                const uint8_t* data = reinterpret_cast<const uint8_t*>(temp_color_frame.get_data());
-                cv::Mat temp(height, width, CV_8UC3, (void*)data, cv::Mat::AUTO_STEP);
+            rs2::video_frame color = impl->frames.get_color_frame();
+            if (color) {
+                const uint8_t* data = reinterpret_cast<const uint8_t*>(color.get_data());
+                cv::Mat raw(color.get_height(), color.get_width(), CV_8UC3, (void*)data, cv::Mat::AUTO_STEP);
+                cv::Mat processed = raw.clone();
+
                 std::lock_guard lock(frameMutex);
-                frame = temp.clone(); 
-                cv::imwrite("frame_000.png", frame);
+                frame = processed;
             }
         }
     }
@@ -114,12 +120,37 @@ rs2::frame DepthCameraInput::getDepth() {
 bool DepthCameraInput::getFrame(cv::Mat &outputFrame) {
     std::lock_guard lock(frameMutex);
     if (!frame.empty()) {
-        outputFrame = frame.clone();
-        cv::imwrite("frame_001.png", frame);
+        auto temp = frame.clone();
+        outputFrame = detectLandmarks(temp);
+        cv::imwrite("frame_001.png", outputFrame);
         return true;
     }
     spdlog::info("Frame is empty");
     return false;
 }
+
+cv::Mat DepthCameraInput::detectLandmarks(
+   cv::Mat processed)
+{
+    // Run dlib face detection
+    dlib::cv_image<dlib::rgb_pixel> dlib_img(processed);
+    std::vector<dlib::rectangle> faces = detector(dlib_img);
+    spdlog::info("Dlib detected {} face(s)", faces.size());
+    cv::imwrite("frame_002.png", processed);
+
+    hasLandmarks = false;
+    if (!faces.empty()) {
+        landmarks = predictor(dlib_img, faces[0]);
+        hasLandmarks = true;
+
+        // Draw landmarks
+        for (unsigned int i = 0; i < landmarks.num_parts(); ++i) {
+            const auto& pt = landmarks.part(i);
+            cv::circle(processed, cv::Point(pt.x(), pt.y()), 2, cv::Scalar(0, 255, 0), -1);
+        }
+    }
+    return processed;
+}
+
 
 } // namespace UsArMirror

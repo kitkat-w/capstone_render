@@ -79,6 +79,8 @@ target_link_libraries(${PROJECT_NAME}
         ${GLOG_LIBRARY}
         ${OpenCV_LIBS}
         realsense2
+        dlib::dlib
+        eos
 )
 
 
