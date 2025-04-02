@@ -86,10 +86,24 @@ CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/a4/capstone_render/src/depth_camera.cpp -o CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.s
 
+CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o: CMakeFiles/UsARMirror.dir/flags.make
+CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o: /home/a4/capstone_render/src/face_reconstruction.cpp
+CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o: CMakeFiles/UsARMirror.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/a4/capstone_render/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o -MF CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o.d -o CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o -c /home/a4/capstone_render/src/face_reconstruction.cpp
+
+CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/a4/capstone_render/src/face_reconstruction.cpp > CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.i
+
+CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/a4/capstone_render/src/face_reconstruction.cpp -o CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.s
+
 CMakeFiles/UsARMirror.dir/src/main.cpp.o: CMakeFiles/UsARMirror.dir/flags.make
 CMakeFiles/UsARMirror.dir/src/main.cpp.o: /home/a4/capstone_render/src/main.cpp
 CMakeFiles/UsARMirror.dir/src/main.cpp.o: CMakeFiles/UsARMirror.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/a4/capstone_render/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/UsARMirror.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/a4/capstone_render/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/UsARMirror.dir/src/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/UsARMirror.dir/src/main.cpp.o -MF CMakeFiles/UsARMirror.dir/src/main.cpp.o.d -o CMakeFiles/UsARMirror.dir/src/main.cpp.o -c /home/a4/capstone_render/src/main.cpp
 
 CMakeFiles/UsARMirror.dir/src/main.cpp.i: cmake_force
@@ -103,12 +117,14 @@ CMakeFiles/UsARMirror.dir/src/main.cpp.s: cmake_force
 # Object files for target UsARMirror
 UsARMirror_OBJECTS = \
 "CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o" \
+"CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o" \
 "CMakeFiles/UsARMirror.dir/src/main.cpp.o"
 
 # External object files for target UsARMirror
 UsARMirror_EXTERNAL_OBJECTS =
 
 UsARMirror: CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o
+UsARMirror: CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o
 UsARMirror: CMakeFiles/UsARMirror.dir/src/main.cpp.o
 UsARMirror: CMakeFiles/UsARMirror.dir/build.make
 UsARMirror: vcpkg_installed/arm64-linux/debug/lib/libimguid.a
@@ -125,6 +141,10 @@ UsARMirror: /usr/lib/libopencv_stitching.so.4.8.0
 UsARMirror: /usr/lib/libopencv_video.so.4.8.0
 UsARMirror: /usr/lib/libopencv_videoio.so.4.8.0
 UsARMirror: /usr/local/lib/libdlib.a
+UsARMirror: /usr/lib/aarch64-linux-gnu/libboost_filesystem.so.1.74.0
+UsARMirror: /usr/lib/aarch64-linux-gnu/libboost_program_options.so.1.74.0
+UsARMirror: /usr/lib/aarch64-linux-gnu/libGLESv2.so
+UsARMirror: /usr/lib/aarch64-linux-gnu/libEGL.so
 UsARMirror: /usr/lib/aarch64-linux-gnu/libm.so
 UsARMirror: vcpkg_installed/arm64-linux/debug/lib/libfreetyped.a
 UsARMirror: vcpkg_installed/arm64-linux/debug/lib/libbz2d.a
@@ -165,7 +185,7 @@ UsARMirror: /usr/local/cuda/lib64/libcurand.so
 UsARMirror: /usr/local/cuda/lib64/libcusolver.so
 UsARMirror: /usr/local/cuda/lib64/libcudart.so
 UsARMirror: CMakeFiles/UsARMirror.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/a4/capstone_render/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable UsARMirror"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/a4/capstone_render/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable UsARMirror"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/UsARMirror.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

@@ -9,8 +9,11 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <spdlog/spdlog.h>
+#include <glad/glad.h>  // Or <GL/glew.h> if you're using GLEW
+
 
 #include "depth_camera.hpp"
+#include "face_reconstruction.hpp"
 // #include "gesture.hpp"
 // #include "ui.hpp"
 
@@ -101,6 +104,8 @@ extern "C" int main(int argc, char *argv[]) {
 
     // Launch tasks
     auto depthcameraInput = std::make_shared<DepthCameraInput>(state, 2);
+    auto faceReconstruction = std::make_shared<FaceReconstruction>("share");
+
     // auto gestureControlPipeline = std::make_shared<GestureControlPipeline>(state, cameraInput);
     // auto userInterface = std::make_shared<UserInterface>(state, gestureControlPipeline);
 
@@ -126,13 +131,21 @@ extern "C" int main(int argc, char *argv[]) {
 
         // Render frontends
         // userInterface->render();
-        depthcameraInput->render();
-        // gestureControlPipeline->render();
+        depthcameraInput->render();  // draw camera feed
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && depthcameraInput->hasLandmarks) {
+            faceReconstruction->reconstructFromLandmarks(
+                depthcameraInput->landmarks,
+                depthcameraInput->getLastColorFrame());
+        }
+
+        faceReconstruction->render();  // draw 3D face on top
+
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         glfwSwapBuffers(window);
+
     }
 
     // Cleanup

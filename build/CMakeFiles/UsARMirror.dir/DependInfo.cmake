@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/a4/capstone_render/src/depth_camera.cpp" "CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o" "gcc" "CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o.d"
+  "/home/a4/capstone_render/src/face_reconstruction.cpp" "CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o" "gcc" "CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o.d"
   "/home/a4/capstone_render/src/main.cpp" "CMakeFiles/UsARMirror.dir/src/main.cpp.o" "gcc" "CMakeFiles/UsARMirror.dir/src/main.cpp.o.d"
   )
 

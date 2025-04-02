@@ -54,11 +54,13 @@ find_library(EGL_LIB EGL REQUIRED)
 
 file(GLOB SOURCES
         "src/depth_camera.cpp"
+        "src/face_reconstruction.cpp"
         "src/main.cpp"
 )
 
 file(GLOB HEADERS
         "src/depth_camera.hpp"
+        "src/face_reconstruction.hpp"
 )
 
 add_executable(UsARMirror
@@ -81,11 +83,14 @@ target_link_libraries(${PROJECT_NAME}
         realsense2
         dlib::dlib
         eos
+        ${Boost_LIBRARIES}
+        ${GLESv2_LIB}
+        ${EGL_LIB}
 )
 
 
 # Or manually set eos includes:
-# include_directories(${PROJECT_SOURCE_DIR}/external/eos/include) # Change if installed elsewhere
+include_directories(${PROJECT_SOURCE_DIR}/external/eos/include) # Change if installed elsewhere
 
 # cereal (used by eos)
 include_directories(${PROJECT_SOURCE_DIR}/external/cereal/include) # Change if cereal is separate

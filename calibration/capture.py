@@ -2,6 +2,8 @@ import pyrealsense2 as rs
 import cv2
 import time
 
+print("pyrealsense2 version:", rs.__version__)
+
 # Initialize RealSense pipeline
 pipeline = rs.pipeline()
 config = rs.config()

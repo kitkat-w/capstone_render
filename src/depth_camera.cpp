@@ -152,5 +152,11 @@ cv::Mat DepthCameraInput::detectLandmarks(
     return processed;
 }
 
+cv::Mat DepthCameraInput::getLastColorFrame() const {
+    // std::lock_guard<std::mutex> lock(frameMutex);
+    return frame.empty() ? cv::Mat() : frame.clone();
+}
+
+
 
 } // namespace UsArMirror

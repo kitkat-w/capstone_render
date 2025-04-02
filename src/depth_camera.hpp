@@ -28,10 +28,13 @@ struct DepthCameraInputImpl {
 };
 
 struct Intrinsics {
-  float cx, cy, fx, fy;
-  int width, height;
+  float fx = 615.0f;  // focal length in pixels (x)
+  float fy = 615.0f;  // focal length in pixels (y)
+  float cx = 320.0f;  // optical center x (half of width)
+  float cy = 240.0f;  // optical center y (half of height)
+  int width = 640;
+  int height = 480;
 };
-
 
 class DepthCameraInput {
   public:
@@ -43,6 +46,11 @@ class DepthCameraInput {
 
     int width, height;
 
+    cv::Mat getLastColorFrame() const;
+
+    dlib::full_object_detection landmarks;
+    bool hasLandmarks = false;
+
   private:
     std::shared_ptr<State> state;
     bool running;
@@ -52,12 +60,9 @@ class DepthCameraInput {
     GLuint textureId;
     dlib::frontal_face_detector detector;
     dlib::shape_predictor predictor;
-    dlib::full_object_detection landmarks;
-    bool hasLandmarks = false;
 
     // struct DepthCameraInputImpl;
     std::unique_ptr<DepthCameraInputImpl> impl;
-
     cv::Mat detectLandmarks(
       cv::Mat processed);
 

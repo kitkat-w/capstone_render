@@ -320,6 +320,30 @@ src/depth_camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/UsARMirror.dir/build.make CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.s
 .PHONY : src/depth_camera.cpp.s
 
+src/face_reconstruction.o: src/face_reconstruction.cpp.o
+.PHONY : src/face_reconstruction.o
+
+# target to build an object file
+src/face_reconstruction.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UsARMirror.dir/build.make CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.o
+.PHONY : src/face_reconstruction.cpp.o
+
+src/face_reconstruction.i: src/face_reconstruction.cpp.i
+.PHONY : src/face_reconstruction.i
+
+# target to preprocess a source file
+src/face_reconstruction.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UsARMirror.dir/build.make CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.i
+.PHONY : src/face_reconstruction.cpp.i
+
+src/face_reconstruction.s: src/face_reconstruction.cpp.s
+.PHONY : src/face_reconstruction.s
+
+# target to generate assembly for a file
+src/face_reconstruction.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/UsARMirror.dir/build.make CMakeFiles/UsARMirror.dir/src/face_reconstruction.cpp.s
+.PHONY : src/face_reconstruction.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -371,6 +395,9 @@ help:
 	@echo "... src/depth_camera.o"
 	@echo "... src/depth_camera.i"
 	@echo "... src/depth_camera.s"
+	@echo "... src/face_reconstruction.o"
+	@echo "... src/face_reconstruction.i"
+	@echo "... src/face_reconstruction.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
