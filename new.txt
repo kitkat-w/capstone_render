@@ -1,0 +1,15 @@
+rm -rf build CMakeCache.txt CMakeFiles/
+
+Then run your preset-based build again:
+
+cmake --preset=default
+cmake --build --preset=default
+
+🧠 Optional: Use a dedicated build folder
+
+To keep things clean and flexible:
+
+mkdir -p build/default
+cd build/default
+cmake ../.. --preset=default
+cmake --build .

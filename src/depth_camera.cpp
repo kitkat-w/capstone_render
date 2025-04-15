@@ -121,7 +121,8 @@ bool DepthCameraInput::getFrame(cv::Mat &outputFrame) {
     std::lock_guard lock(frameMutex);
     if (!frame.empty()) {
         auto temp = frame.clone();
-        outputFrame = detectLandmarks(temp);
+        // outputFrame = detectLandmarks(temp);
+        outputFrame = temp;
         cv::imwrite("frame_001.png", outputFrame);
         return true;
     }

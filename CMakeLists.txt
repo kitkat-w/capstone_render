@@ -54,13 +54,15 @@ find_library(EGL_LIB EGL REQUIRED)
 
 file(GLOB SOURCES
         "src/depth_camera.cpp"
-        "src/face_reconstruction.cpp"
         "src/main.cpp"
+        "src/load_gltf.cpp"
+        "src/renderer.cpp"
 )
 
 file(GLOB HEADERS
         "src/depth_camera.hpp"
-        "src/face_reconstruction.hpp"
+        "src/load_gltf.hpp"
+        "src/renderer.hpp"
 )
 
 add_executable(UsARMirror
@@ -88,12 +90,13 @@ target_link_libraries(${PROJECT_NAME}
         ${EGL_LIB}
 )
 
+# include_directories(${PROJECT_SOURCE_DIR}/external/tinygltf)
 
-# Or manually set eos includes:
-include_directories(${PROJECT_SOURCE_DIR}/external/eos/include) # Change if installed elsewhere
+# # Or manually set eos includes:
+# include_directories(${PROJECT_SOURCE_DIR}/external/eos/include) # Change if installed elsewhere
 
-# cereal (used by eos)
-include_directories(${PROJECT_SOURCE_DIR}/external/cereal/include) # Change if cereal is separate
+# # cereal (used by eos)
+# include_directories(${PROJECT_SOURCE_DIR}/external/cereal/include) # Change if cereal is separate
 
 # Add includes
 include_directories(
@@ -103,6 +106,7 @@ include_directories(
     ${EIGEN3_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR}/external/eos/include
     ${PROJECT_SOURCE_DIR}/external/cereal/include 
+    ${PROJECT_SOURCE_DIR}/external/tiny_gltf
 )
 
 # Source files

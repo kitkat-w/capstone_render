@@ -1,3 +1,4 @@
+// main.cpp
 #define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
@@ -9,13 +10,10 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <spdlog/spdlog.h>
-#include <glad/glad.h>  // Or <GL/glew.h> if you're using GLEW
-
 
 #include "depth_camera.hpp"
 #include "face_reconstruction.hpp"
-// #include "gesture.hpp"
-// #include "ui.hpp"
+#include "renderer.hpp"
 
 namespace {
 const char *NAME = "UsARMirror";
@@ -52,15 +50,13 @@ extern "C" int main(int argc, char *argv[]) {
     auto state = std::make_shared<State>(); // Shared application state
     spdlog::info("Starting {}", NAME);
 
-    /********** Init glfw, gl **********/
     if (!glfwInit()) {
         spdlog::error("Failed to initialize glfw");
         return EXIT_FAILURE;
     }
 
-    GLFWwindow *window;
-    window = glfwCreateWindow(state->viewportWidth * state->viewportScaling,
-                              state->viewportHeight * state->viewportScaling, NAME, nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(state->viewportWidth * state->viewportScaling,
+                                          state->viewportHeight * state->viewportScaling, NAME, nullptr, nullptr);
     if (!window) {
         glfwTerminate();
         spdlog::error("Failed to create window");
@@ -80,9 +76,15 @@ extern "C" int main(int argc, char *argv[]) {
 
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+    // glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Transparent background
+
+    // glDepthFunc(GL_LESS);
     glfwSwapInterval(0);
 
-    // Setup ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -91,23 +93,22 @@ extern "C" int main(int argc, char *argv[]) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-    // Setup font
     auto font_path_res = get_default_font();
     if (font_path_res.has_value()) {
         std::string font_path = font_path_res.value();
         spdlog::debug("Using font: {}", font_path);
         ImFontConfig font_config;
-        io.Fonts->AddFontFromFileTTF(font_path_res.value().c_str(), 16.0f, &font_config);
+        io.Fonts->AddFontFromFileTTF(font_path.c_str(), 16.0f, &font_config);
     } else {
         spdlog::warn("Could not find a default font, using the ImGui default font.");
     }
 
     // Launch tasks
     auto depthcameraInput = std::make_shared<DepthCameraInput>(state, 2);
-    auto faceReconstruction = std::make_shared<FaceReconstruction>("share");
 
-    // auto gestureControlPipeline = std::make_shared<GestureControlPipeline>(state, cameraInput);
-    // auto userInterface = std::make_shared<UserInterface>(state, gestureControlPipeline);
+    // Initialize GLTF renderer
+    MeshRenderer::init();
+    MeshRenderer::loadModel("ray-ban_glasses.glb");
 
     // Render Loop
     while (!glfwWindowShouldClose(window)) {
@@ -117,43 +118,42 @@ extern "C" int main(int argc, char *argv[]) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // Clear frame
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            // state->flags.showDebug = true;
-        }
+        // // Render frontends
+        // depthcameraInput->render();
+        // MeshRenderer::renderToTexture();
 
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-            // state->flags.showDebug = false;
-        }
 
-        // Render frontends
-        // userInterface->render();
-        depthcameraInput->render();  // draw camera feed
+        // 2. Render depth camera background
+        glDisable(GL_DEPTH_TEST);
+        depthcameraInput->render();
+        glEnable(GL_DEPTH_TEST);
 
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && depthcameraInput->hasLandmarks) {
-            faceReconstruction->reconstructFromLandmarks(
-                depthcameraInput->landmarks,
-                depthcameraInput->getLastColorFrame());
-        }
+        // 3. Render mesh
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthMask(GL_FALSE);
 
-        faceReconstruction->render();  // draw 3D face on top
+        MeshRenderer::renderToTexture();
+
+        glDepthMask(GL_TRUE);
+        glDisable(GL_BLEND);
 
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
-
     }
 
-    // Cleanup
     spdlog::info("Cleaning up...");
+    MeshRenderer::cleanup();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     glfwTerminate();
     return EXIT_SUCCESS;
 }
+
 } // namespace UsArMirror
