@@ -5,28 +5,31 @@
 #include <GLFW/glfw3.h>
 
 std::string FragmentShaderCode = R"(
-#version 330 core
-in vec3 normal;
-in vec3 position;
-in vec2 texcoord;
-
-uniform sampler2D tex;
-uniform vec3 sun_position;
-uniform vec3 sun_color;
-
-out vec4 color;
-
-void main() {
-    float lum = max(dot(normal, normalize(sun_position)), 0.0);
-    vec4 texColor = texture(tex, texcoord);
-
-    // Optional discard for transparent pixels
-    if (texColor.a < 0.1)
-        discard;
-
-    color = texColor * vec4((0.3 + 0.7 * lum) * sun_color, texColor.a);
-}
-)";
+	#version 330 core
+	in vec3 normal;
+	in vec3 position;
+	in vec2 texcoord;
+	
+	uniform sampler2D tex;
+	uniform vec3 sun_position;
+	uniform vec3 sun_color;
+	uniform float opacity;  // NEW: uniform to control transparency
+	
+	out vec4 color;
+	
+	void main() {
+		float lum = max(dot(normal, normalize(sun_position)), 0.0);
+		vec4 texColor = texture(tex, texcoord);
+	
+		// Optional discard for alpha clipping (can comment this if always blending)
+		if (texColor.a < 0.1)
+			discard;
+	
+		float alpha = texColor.a * opacity;  // Combine texture alpha and uniform opacity
+		color = vec4(texColor.rgb * (0.3 + 0.7 * lum) * sun_color, alpha);
+	}
+	)";
+	
 
 std::string VertexShaderCode = R"(
 #version 330 core

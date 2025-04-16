@@ -615,6 +615,10 @@ int main(int argc, char **argv) {
         glUniform3fv(sun_position_u, 1, &sun_position[0]);
         glUniform3fv(sun_color_u, 1, &sun_color[0]);
 
+        GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
+        glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
+
+
         drawModel(vaoAndEbos, model);
         glfwSwapBuffers(window.window);
         glfwPollEvents();
