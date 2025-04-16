@@ -9,7 +9,7 @@
 namespace UsArMirror {
 
 DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
-    : state(state), running(true), textureId(-1) {
+    : state(state), running(true), textureId(-1), depth_frame(rs2::frame()) {
     // RealSense pipeline setup
     try {
         impl = std::make_unique<DepthCameraInputImpl>();
@@ -24,13 +24,13 @@ DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
 
         spdlog::info("RealSense camera started: width={}, height={}", width, height);
     
-        detector = dlib::get_frontal_face_detector();
-        try {
-            dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> predictor;
-        } catch (dlib::serialization_error& e) {
-            throw std::runtime_error(std::string("Could not load landmark model: ") + e.what());
-        }
-        spdlog::info("Deserialized dlib predictor");
+        // detector = dlib::get_frontal_face_detector();
+        // try {
+        //     dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> predictor;
+        // } catch (dlib::serialization_error& e) {
+        //     throw std::runtime_error(std::string("Could not load landmark model: ") + e.what());
+        // }
+        // spdlog::info("Deserialized dlib predictor");
         
     } catch (const rs2::error& e) {
         throw std::runtime_error(std::string("RealSense error: ") + e.what());
@@ -69,6 +69,8 @@ void DepthCameraInput::captureLoop() {
 
         if (impl->pipe.poll_for_frames(&impl->frames)) {
             rs2::video_frame color = impl->frames.get_color_frame();
+            rs2::depth_frame depth = impl->frames.get_depth_frame();
+            // spdlog::info("Depth frame stream type: {}", depth.get_profile().stream_type());
             if (color) {
                 const uint8_t* data = reinterpret_cast<const uint8_t*>(color.get_data());
                 cv::Mat raw(color.get_height(), color.get_width(), CV_8UC3, (void*)data, cv::Mat::AUTO_STEP);
@@ -77,6 +79,11 @@ void DepthCameraInput::captureLoop() {
                 std::lock_guard lock(frameMutex);
                 frame = processed;
             }
+            if (depth) {
+                std::lock_guard lock(frameMutex);
+                depth_frame = depth;
+            }
+            
         }
     }
 }
@@ -111,11 +118,17 @@ void DepthCameraInput::render() {
     }
 }
 
-rs2::frame DepthCameraInput::getDepth() {
+rs2::depth_frame DepthCameraInput::getDepth() {
     std::lock_guard lock(frameMutex);
-    auto output = impl->depth_frame;
-    return output;
+
+    if (depth_frame && depth_frame.is<rs2::depth_frame>()) {
+        return depth_frame;
+    } else {
+        spdlog::warn("Depth frame is empty or invalid.");
+        return rs2::frame();  // return an explicitly empty frame
+    }
 }
+
 
 bool DepthCameraInput::getFrame(cv::Mat &outputFrame) {
     std::lock_guard lock(frameMutex);

@@ -58,6 +58,7 @@ file(GLOB SOURCES
         "src/window.cpp"
         "src/shaders.cpp"
         "src/background_shader.cpp"
+        "src/face_reconstruction.cpp"
         # "src/renderer.cpp"
 )
 
@@ -67,6 +68,7 @@ file(GLOB HEADERS
         "src/shaders.h"
         "src/background_shader.h"
         "src/common.hpp"
+        "src/face_reconstruction.hpp"
         # "src/renderer.hpp"
 )
 

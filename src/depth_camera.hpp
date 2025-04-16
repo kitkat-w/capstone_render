@@ -47,6 +47,7 @@ class DepthCameraInput {
     int width, height;
 
     cv::Mat getLastColorFrame() const;
+    rs2::depth_frame getDepth();
 
     dlib::full_object_detection landmarks;
     bool hasLandmarks = false;
@@ -57,6 +58,7 @@ class DepthCameraInput {
     std::mutex frameMutex;
     std::thread captureThread;
     cv::Mat frame;
+    rs2::depth_frame depth_frame;
     GLuint textureId;
     dlib::frontal_face_detector detector;
     dlib::shape_predictor predictor;
@@ -68,7 +70,6 @@ class DepthCameraInput {
 
     void createGlTexture();
     void captureLoop();
-    rs2::frame getDepth();
 
 };
 } // namespace UsArMirror
