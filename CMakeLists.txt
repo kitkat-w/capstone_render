@@ -66,6 +66,7 @@ file(GLOB HEADERS
         "src/window.h"
         "src/shaders.h"
         "src/background_shader.h"
+        "src/common.hpp"
         # "src/renderer.hpp"
 )
 

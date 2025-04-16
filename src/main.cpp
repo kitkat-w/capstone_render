@@ -164,6 +164,12 @@
 #include "shaders.h"
 #include "window.h"
 #include "background_shader.h"
+#include "depth_camera.hpp"
+#include "common.hpp"
+
+// #include <imgui.h>
+// #include <imgui_impl_glfw.h>
+// #include <imgui_impl_opengl3.h>
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -477,6 +483,7 @@ void displayLoop(Window &window, const std::string &filename) {
   GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
   GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
   GLuint sun_color_u = glGetUniformLocation(shader.pid, "sun_color");
+  
 
   tinygltf::Model model;
   if (!loadModel(model, filename.c_str())) return;
@@ -556,11 +563,12 @@ int main(int argc, char **argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    cv::VideoCapture cap("video.mp4");
-    if (!cap.isOpened()) {
-        std::cerr << "Failed to open video." << std::endl;
-        return -1;
-    }
+    auto state = std::make_shared<UsArMirror::State>();
+    state->viewportWidth = 640;
+    state->viewportHeight = 480;
+
+    auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
+
 
     Shaders shader;
     glUseProgram(shader.pid);
@@ -582,14 +590,15 @@ int main(int argc, char **argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Update background texture
-        cv::Mat frame;
-        if (cap.read(frame)) {
-            cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+        cv::Mat colorFrame;
+        if (depthCameraInput->getFrame(colorFrame)) {
+            cv::cvtColor(colorFrame, colorFrame, cv::COLOR_BGR2RGB);
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols, frame.rows, 0,
-                         GL_RGB, GL_UNSIGNED_BYTE, frame.data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, colorFrame.cols, colorFrame.rows, 0,
+                GL_RGB, GL_UNSIGNED_BYTE, colorFrame.data);
         }
+        cv::imwrite("frame_002.png", colorFrame);
 
         // Draw background
         glDisable(GL_DEPTH_TEST);
