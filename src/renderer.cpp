@@ -1,199 +1,165 @@
+#include <fstream>
+#include <iostream>
+
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_NOEXCEPTION
+#define JSON_NOEXCEPTION
+#include "tiny_gltf.h"
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
 // renderer.cpp
 #include "renderer.hpp"
-#include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
+#include "shaders.h"
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
-#include "load_gltf.hpp"
-
-#define BUFFER_OFFSET(i) ((char*)NULL + (i))
+#include <map>
 
 namespace MeshRenderer {
 
-static GLuint vao, vbo, ebo;
+static GLuint vao = 0;
+static std::map<int, GLuint> vbos;
+static tinygltf::Model model;
 static GLuint shaderProgram;
-static GLuint textureID = 0;
-static size_t indexCount = 0;
+static GLuint MVP_u, sun_position_u, sun_color_u;
+static glm::mat4 model_rot = glm::mat4(1.0f);
+static glm::vec3 model_pos = glm::vec3(-3, 0, -3);
 
-static const char* vertexShaderSrc = R"(
-#version 330 core
-layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec3 inNormal;
-layout (location = 2) in vec2 inUV;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-out vec3 Normal;
-out vec3 FragPos;
-out vec2 TexCoord;
-
-void main() {
-    FragPos = vec3(model * vec4(inPos, 1.0));
-    Normal = mat3(transpose(inverse(model))) * inNormal;
-    TexCoord = inUV;
-    gl_Position = projection * view * vec4(FragPos, 1.0);
+static bool loadModel(const std::string& filename) {
+    tinygltf::TinyGLTF loader;
+    std::string err, warn;
+    bool res = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+    if (!warn.empty()) std::cout << "[GLTF Warning] " << warn << std::endl;
+    if (!err.empty()) std::cerr << "[GLTF Error] " << err << std::endl;
+    if (!res) std::cerr << "Failed to load glTF: " << filename << std::endl;
+    return res;
 }
-)";
 
-static const char* fragmentShaderSrc = R"(
-#version 330 core
-in vec3 Normal;
-in vec3 FragPos;
-in vec2 TexCoord;
+static void bindMesh(tinygltf::Mesh& mesh) {
+    for (size_t i = 0; i < model.bufferViews.size(); ++i) {
+        const auto& bufferView = model.bufferViews[i];
+        if (bufferView.target == 0) continue;
 
-out vec4 FragColor;
-
-uniform sampler2D tex;
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-uniform float objectAlpha = 1.0;
-
-void main() {
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 texColor = texture(tex, TexCoord).rgb;
-    vec3 result = diff * texColor;
-
-    vec4 texSample = texture(tex, TexCoord);
-    if (texSample.a < 0.01)
-        discard;  // optional: completely skip the fragment
-
-    FragColor = vec4(texSample.rgb * diff, texSample.a);
-
-    // FragColor = vec4(result, objectAlpha);  // <-- Alpha matters
-}
-)";
-
-static GLuint compileShader(GLenum type, const char* src) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &src, nullptr);
-    glCompileShader(shader);
-
-    GLint success;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        char infoLog[512];
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-        std::cerr << "Shader compile error:\n" << infoLog << std::endl;
+        const auto& buffer = model.buffers[bufferView.buffer];
+        GLuint vbo;
+        glGenBuffers(1, &vbo);
+        vbos[i] = vbo;
+        glBindBuffer(bufferView.target, vbo);
+        glBufferData(bufferView.target, bufferView.byteLength,
+                     &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
     }
-    return shader;
+
+    for (const auto& primitive : mesh.primitives) {
+        for (const auto& attrib : primitive.attributes) {
+            const auto& accessor = model.accessors[attrib.second];
+            int byteStride = accessor.ByteStride(model.bufferViews[accessor.bufferView]);
+            glBindBuffer(GL_ARRAY_BUFFER, vbos[accessor.bufferView]);
+
+            int size = accessor.type == TINYGLTF_TYPE_SCALAR ? 1 : accessor.type;
+            int loc = attrib.first == "POSITION" ? 0 : attrib.first == "NORMAL" ? 1 : attrib.first == "TEXCOORD_0" ? 2 : -1;
+            if (loc >= 0) {
+                glEnableVertexAttribArray(loc);
+                glVertexAttribPointer(loc, size, accessor.componentType,
+                                      accessor.normalized ? GL_TRUE : GL_FALSE,
+                                      byteStride, BUFFER_OFFSET(accessor.byteOffset));
+            }
+        }
+
+        if (!model.textures.empty()) {
+            auto& tex = model.textures[0];
+            if (tex.source >= 0) {
+                auto& image = model.images[tex.source];
+                GLuint texid;
+                glGenTextures(1, &texid);
+                glBindTexture(GL_TEXTURE_2D, texid);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+                GLenum format = image.component == 1 ? GL_RED : image.component == 2 ? GL_RG : image.component == 3 ? GL_RGB : GL_RGBA;
+                GLenum type = image.bits == 16 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_BYTE;
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+                             format, type, &image.image.at(0));
+            }
+        }
+    }
 }
 
-void init() {
-    GLuint vert = compileShader(GL_VERTEX_SHADER, vertexShaderSrc);
-    GLuint frag = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
+static void bindModelNodes(tinygltf::Node& node) {
+    if (node.mesh >= 0) bindMesh(model.meshes[node.mesh]);
+    for (int child : node.children) bindModelNodes(model.nodes[child]);
+}
 
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vert);
-    glAttachShader(shaderProgram, frag);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vert);
-    glDeleteShader(frag);
-
+static void bindModel() {
     glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-}
-
-bool loadModel(const std::string& filename) {
-    std::vector<::Vertex> vertices;
-    std::vector<uint32_t> indices;
-    std::vector<unsigned char> textureData;
-    int texW, texH, texC;
-
-    if (!loadGLTFMesh(filename, vertices, indices, textureData, texW, texH, texC)) {
-        std::cerr << "[MeshRenderer] Failed to load GLTF mesh." << std::endl;
-        return false;
-    }
-
-    indexCount = indices.size();
-
     glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), indices.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-    glEnableVertexAttribArray(2);
+    const auto& scene = model.scenes[model.defaultScene];
+    for (int node : scene.nodes) bindModelNodes(model.nodes[node]);
 
     glBindVertexArray(0);
-
-    if (!textureData.empty()) {
-        glGenTextures(1, &textureID);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texW, texH, 0, texC == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        std::cout << "[MeshRenderer] Texture loaded and bound. ID: " << textureID << std::endl;
+    for (auto it = vbos.begin(); it != vbos.end();) {
+        const auto& bufferView = model.bufferViews[it->first];
+        if (bufferView.target != GL_ELEMENT_ARRAY_BUFFER) {
+            glDeleteBuffers(1, &it->second);
+            it = vbos.erase(it);
+        } else {
+            ++it;
+        }
     }
-
-    return true;
 }
 
-void renderToTexture() {
-    glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
-    renderToTexture(glm::value_ptr(view), glm::value_ptr(proj));
-}
-
-
-void renderToTexture(const float* viewMatrix, const float* projMatrix) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+void init(const std::string& pathToGLTF) {
+    Shaders shader;
+    shaderProgram = shader.pid;
     glUseProgram(shaderProgram);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = viewMatrix ? glm::make_mat4(viewMatrix) : glm::lookAt(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    glm::mat4 projection = projMatrix ? glm::make_mat4(projMatrix) : glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 100.0f);
+    MVP_u = glGetUniformLocation(shaderProgram, "MVP");
+    sun_position_u = glGetUniformLocation(shaderProgram, "sun_position");
+    sun_color_u = glGetUniformLocation(shaderProgram, "sun_color");
 
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-    glm::vec3 camPos = glm::vec3(glm::inverse(view)[3]);
-    glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(camPos));
-    glUniform3fv(glGetUniformLocation(shaderProgram, "lightPos"), 1, glm::value_ptr(glm::vec3(0, 0, 5)));
-
-    if (textureID) {
-        std::cout << "[MeshRenderer] Texture loaded and bound. ID: " << textureID << std::endl;
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glUniform1i(glGetUniformLocation(shaderProgram, "tex"), 0);
-    }
-
-    glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    if (loadModel(pathToGLTF)) bindModel();
 }
 
-unsigned int getRenderedTexture() {
-    return textureID;
+void render(int windowWidth, int windowHeight) {
+    glUseProgram(shaderProgram);
+    glm::mat4 model_mat = glm::translate(glm::mat4(1.0f), model_pos) * model_rot;
+    glm::mat4 view_mat = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)windowWidth / windowHeight, 0.01f, 1000.0f);
+    glm::mat4 mvp = proj * view_mat * model_mat;
+
+    glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
+    glUniform3fv(sun_position_u, 1, &glm::vec3(3.0f, 10.0f, -5.0f)[0]);
+    glUniform3fv(sun_color_u, 1, &glm::vec3(1.0f, 1.0f, 1.0f)[0]);
+
+    glBindVertexArray(vao);
+    const auto& scene = model.scenes[model.defaultScene];
+    for (int node : scene.nodes) {
+        const auto& n = model.nodes[node];
+        if (n.mesh >= 0) {
+            const auto& mesh = model.meshes[n.mesh];
+            for (const auto& prim : mesh.primitives) {
+                const auto& indexAccessor = model.accessors[prim.indices];
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[indexAccessor.bufferView]);
+                glDrawElements(prim.mode, indexAccessor.count, indexAccessor.componentType, BUFFER_OFFSET(indexAccessor.byteOffset));
+            }
+        }
+    }
+    glBindVertexArray(0);
 }
 
 void cleanup() {
     glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
+    for (auto& [_, id] : vbos) glDeleteBuffers(1, &id);
+    vbos.clear();
     glDeleteProgram(shaderProgram);
-    if (textureID) glDeleteTextures(1, &textureID);
 }
 
 } // namespace MeshRenderer

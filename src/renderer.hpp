@@ -6,26 +6,8 @@
 #include <glad/glad.h>
 
 namespace MeshRenderer {
-
-// struct Vertex {
-//     glm::vec3 position;
-//     glm::vec3 normal;
-// };
-
-// Initializes OpenGL resources and compiles shaders
-void init();
-
-// Loads a GLTF (.glb) model and uploads it to GPU buffers
-bool loadModel(const std::string& filename);
-
-// Renders the loaded model using the default view/projection/camera
-void renderToTexture();
-
-// Optional: retrieves rendered texture (FBO integration placeholder)
-void renderToTexture();
-void renderToTexture(const float* viewMatrix, const float* projMatrix);
-
-// Releases OpenGL resources
-void cleanup();
-
-} // namespace MeshRenderer
+    void init(const std::string& pathToGLTF); // compile shader
+    // bool loadModel(const std::string& path); // load + bind GLTF
+    void render(glm::mat4 mvp, glm::vec3 sunPos, glm::vec3 sunColor);
+    void cleanup();
+    }

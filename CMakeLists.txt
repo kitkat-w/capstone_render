@@ -55,14 +55,16 @@ find_library(EGL_LIB EGL REQUIRED)
 file(GLOB SOURCES
         "src/depth_camera.cpp"
         "src/main.cpp"
-        "src/load_gltf.cpp"
-        "src/renderer.cpp"
+        "src/window.cpp"
+        "src/shaders.cpp"
+        # "src/renderer.cpp"
 )
 
 file(GLOB HEADERS
         "src/depth_camera.hpp"
-        "src/load_gltf.hpp"
-        "src/renderer.hpp"
+        "src/window.h"
+        "src/shaders.h"
+        # "src/renderer.hpp"
 )
 
 add_executable(UsARMirror

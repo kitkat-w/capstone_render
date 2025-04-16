@@ -7,21 +7,21 @@
 },
 {
   "directory": "/home/a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/a4/capstone_render/external/eos/include -I/home/a4/capstone_render/external/cereal/include -I/home/a4/capstone_render/external/tiny_gltf -I/home/a4/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -isystem /home/a4/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -Wreturn-type -o CMakeFiles/UsARMirror.dir/src/load_gltf.cpp.o -c /home/a4/capstone_render/src/load_gltf.cpp",
-  "file": "/home/a4/capstone_render/src/load_gltf.cpp",
-  "output": "CMakeFiles/UsARMirror.dir/src/load_gltf.cpp.o"
-},
-{
-  "directory": "/home/a4/capstone_render/build",
   "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/a4/capstone_render/external/eos/include -I/home/a4/capstone_render/external/cereal/include -I/home/a4/capstone_render/external/tiny_gltf -I/home/a4/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -isystem /home/a4/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -Wreturn-type -o CMakeFiles/UsARMirror.dir/src/main.cpp.o -c /home/a4/capstone_render/src/main.cpp",
   "file": "/home/a4/capstone_render/src/main.cpp",
   "output": "CMakeFiles/UsARMirror.dir/src/main.cpp.o"
 },
 {
   "directory": "/home/a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/a4/capstone_render/external/eos/include -I/home/a4/capstone_render/external/cereal/include -I/home/a4/capstone_render/external/tiny_gltf -I/home/a4/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -isystem /home/a4/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -Wreturn-type -o CMakeFiles/UsARMirror.dir/src/renderer.cpp.o -c /home/a4/capstone_render/src/renderer.cpp",
-  "file": "/home/a4/capstone_render/src/renderer.cpp",
-  "output": "CMakeFiles/UsARMirror.dir/src/renderer.cpp.o"
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/a4/capstone_render/external/eos/include -I/home/a4/capstone_render/external/cereal/include -I/home/a4/capstone_render/external/tiny_gltf -I/home/a4/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -isystem /home/a4/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -Wreturn-type -o CMakeFiles/UsARMirror.dir/src/shaders.cpp.o -c /home/a4/capstone_render/src/shaders.cpp",
+  "file": "/home/a4/capstone_render/src/shaders.cpp",
+  "output": "CMakeFiles/UsARMirror.dir/src/shaders.cpp.o"
+},
+{
+  "directory": "/home/a4/capstone_render/build",
+  "command": "/usr/bin/c++ -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/a4/capstone_render/external/eos/include -I/home/a4/capstone_render/external/cereal/include -I/home/a4/capstone_render/external/tiny_gltf -I/home/a4/capstone_render/external/eos/3rdparty/cereal/include -I/home/a4/capstone_render/external/eos/3rdparty/nanoflann/include -I/home/a4/capstone_render/external/eos/3rdparty/eigen3-nnls/src -I/home/a4/capstone_render/external/eos/3rdparty/toml11 -isystem /usr/include/opencv4 -isystem /home/a4/capstone_render/build/vcpkg_installed/arm64-linux/include -std=gnu++17 -pthread -DXML_STATIC -Wreturn-type -o CMakeFiles/UsARMirror.dir/src/window.cpp.o -c /home/a4/capstone_render/src/window.cpp",
+  "file": "/home/a4/capstone_render/src/window.cpp",
+  "output": "CMakeFiles/UsARMirror.dir/src/window.cpp.o"
 },
 {
   "directory": "/home/a4/capstone_render/build",
