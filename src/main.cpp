@@ -159,6 +159,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "shaders.h"
 #include "window.h"
@@ -171,6 +172,9 @@
 #include "tiny_gltf.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
+
+GLuint backgroundTexture;
 
 bool loadModel(tinygltf::Model &model, const char *filename) {
   tinygltf::TinyGLTF loader;
@@ -436,6 +440,34 @@ glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
   return mvp;
 }
 
+void renderBackground(GLuint texID, int windowWidth, int windowHeight) {
+    glDisable(GL_DEPTH_TEST);
+    glBindTexture(GL_TEXTURE_2D, texID);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 1); glVertex2f(0, 0);
+    glTexCoord2f(1, 1); glVertex2f(windowWidth, 0);
+    glTexCoord2f(1, 0); glVertex2f(windowWidth, windowHeight);
+    glTexCoord2f(0, 0); glVertex2f(0, windowHeight);
+    glEnd();
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);
+}
+
+
 void displayLoop(Window &window, const std::string &filename) {
   Shaders shader = Shaders();
   glUseProgram(shader.pid);
@@ -491,108 +523,89 @@ void displayLoop(Window &window, const std::string &filename) {
   glDeleteVertexArrays(1, &vaoAndEbos.first);
 }
 
-// static void error_callback(int error, const char *description) {
-//   (void)error;
-//   fprintf(stderr, "Error: %s\n", description);
-// }
-
-// int main(int argc, char **argv) {
-//   std::string filename = "models/Cube/Cube.gltf";
-
-//   if (argc > 1) {
-//     filename = argv[1];
-//   }
-
-//   glfwSetErrorCallback(error_callback);
-
-//   if (!glfwInit()) return -1;
-
-//   // Force create OpenGL 3.3
-//   // NOTE(syoyo): Linux + NVIDIA driver segfaults for some reason? commenting out glfwWindowHint will work.
-//   // Note (PE): On laptops with intel hd graphics card you can overcome the segfault by enabling experimental, see below (tested on lenovo thinkpad)
-//   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//   glewExperimental = GL_TRUE;
-
-// #ifdef __APPLE__
-//   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-// #endif
-
-//   Window window = Window(800, 600, "TinyGLTF basic example");
-//   glfwMakeContextCurrent(window.window);
-
-// #ifdef __APPLE__
-//   // https://stackoverflow.com/questions/50192625/openggl-segmentation-fault
-//   glewExperimental = GL_TRUE;
-// #endif
-
-//   glewInit();
-//   std::cout << glGetString(GL_RENDERER) << ", " << glGetString(GL_VERSION)
-//             << std::endl;
-
-//   if (!GLEW_VERSION_3_3) {
-//     std::cerr << "OpenGL 3.3 is required to execute this app." << std::endl;
-//     return EXIT_FAILURE;
-//   }
-
-//   glEnable(GL_DEPTH_TEST);
-//   glDepthFunc(GL_LESS);
-
-//   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//   glEnable(GL_BLEND);
-
-//   displayLoop(window, filename);
-
-//   glfwTerminate();
-//   return 0;
-// }
-
-// bool loadModel(tinygltf::Model &model, const char *filename);
-// void displayLoop(Window &window, const std::string &filename);
-// glm::mat4 genView(glm::vec3 pos, glm::vec3 lookat);
-// glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w, int h);
-
 static void error_callback(int error, const char *description) {
     std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 int main(int argc, char **argv) {
     std::string filename = "models/Cube/Cube.gltf";
-    if (argc > 1) {
-        filename = argv[1];
-    }
+    if (argc > 1) filename = argv[1];
 
-    glfwSetErrorCallback(error_callback);
     if (!glfwInit()) return -1;
-
-    // Request OpenGL 3.3 Core Profile
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 
-    Window window(800, 600, "TinyGLTF + glad");
+    Window window(800, 600, "GLTF Viewer with Video Background");
     glfwMakeContextCurrent(window.window);
-
-    // Initialize glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize glad." << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-    displayLoop(window, filename);
+    glGenTextures(1, &backgroundTexture);
+    glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    cv::VideoCapture cap("video.mp4");
+    if (!cap.isOpened()) {
+        std::cerr << "Failed to open video." << std::endl;
+        return -1;
+    }
+
+    Shaders shader;
+    glUseProgram(shader.pid);
+
+    GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
+    GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
+    GLuint sun_color_u = glGetUniformLocation(shader.pid, "sun_color");
+
+    tinygltf::Model model;
+    if (!loadModel(model, filename.c_str())) return -1;
+    auto vaoAndEbos = bindModel(model);
+
+    glm::mat4 model_mat = glm::mat4(1.0f);
+    glm::mat4 model_rot = glm::mat4(1.0f);
+    glm::vec3 model_pos = glm::vec3(-3, 0, -3);
+    glm::vec3 sun_position = glm::vec3(3.0, 10.0, -5.0);
+    glm::vec3 sun_color = glm::vec3(1.0);
+
+    while (!window.Close()) {
+        window.Resize();
+
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        cv::Mat frame;
+        if (cap.read(frame)) {
+            cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols, frame.rows, 0,
+                         GL_RGB, GL_UNSIGNED_BYTE, frame.data);
+        }
+
+        int w, h;
+        glfwGetFramebufferSize(window.window, &w, &h);
+        renderBackground(backgroundTexture, w, h);
+
+        glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
+        model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
+        model_mat = trans * model_rot;
+        glm::mat4 view_mat = genView(glm::vec3(2, 2, 20), model_pos);
+        glm::mat4 mvp = genMVP(view_mat, model_mat, 45.0f, w, h);
+
+        glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
+        glUniform3fv(sun_position_u, 1, &sun_position[0]);
+        glUniform3fv(sun_color_u, 1, &sun_color[0]);
+
+        drawModel(vaoAndEbos, model);
+        glfwSwapBuffers(window.window);
+        glfwPollEvents();
+    }
+
+    glDeleteVertexArrays(1, &vaoAndEbos.first);
     glfwTerminate();
     return 0;
 }
