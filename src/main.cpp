@@ -163,6 +163,7 @@
 
 #include "shaders.h"
 #include "window.h"
+#include "background_shader.h"
 
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -173,8 +174,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-
-GLuint backgroundTexture;
+GLuint modelTexture = 0; // Global model texture
 
 bool loadModel(tinygltf::Model &model, const char *filename) {
   tinygltf::TinyGLTF loader;
@@ -261,6 +261,7 @@ void bindMesh(std::map<int, GLuint>& vbos,
 
     if (model.textures.size() > 0) {
       // fixme: Use material's baseColor
+      glActiveTexture(GL_TEXTURE0);
       tinygltf::Texture &tex = model.textures[0];
 
       if (tex.source > -1) {
@@ -319,31 +320,56 @@ void bindModelNodes(std::map<int, GLuint>& vbos, tinygltf::Model &model,
 }
 
 std::pair<GLuint, std::map<int, GLuint>> bindModel(tinygltf::Model &model) {
-  std::map<int, GLuint> vbos;
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
+    std::map<int, GLuint> vbos;
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
-  const tinygltf::Scene &scene = model.scenes[model.defaultScene];
-  for (size_t i = 0; i < scene.nodes.size(); ++i) {
-    assert((scene.nodes[i] >= 0) && (scene.nodes[i] < model.nodes.size()));
-    bindModelNodes(vbos, model, model.nodes[scene.nodes[i]]);
-  }
-
-  glBindVertexArray(0);
-  // cleanup vbos but do not delete index buffers yet
-  for (auto it = vbos.cbegin(); it != vbos.cend();) {
-    tinygltf::BufferView bufferView = model.bufferViews[it->first];
-    if (bufferView.target != GL_ELEMENT_ARRAY_BUFFER) {
-      glDeleteBuffers(1, &vbos[it->first]);
-      vbos.erase(it++);
+    for (size_t i = 0; i < model.bufferViews.size(); ++i) {
+        const auto &bufferView = model.bufferViews[i];
+        if (bufferView.target == 0) continue;
+        const auto &buffer = model.buffers[bufferView.buffer];
+        GLuint vbo;
+        glGenBuffers(1, &vbo);
+        vbos[i] = vbo;
+        glBindBuffer(bufferView.target, vbo);
+        glBufferData(bufferView.target, bufferView.byteLength,
+                     &buffer.data.at(0) + bufferView.byteOffset, GL_STATIC_DRAW);
     }
-    else {
-      ++it;
-    }
-  }
 
-  return {vao, vbos};
+    for (const auto &mesh : model.meshes) {
+        for (const auto &primitive : mesh.primitives) {
+            for (const auto &attrib : primitive.attributes) {
+                const auto &accessor = model.accessors[attrib.second];
+                int stride = accessor.ByteStride(model.bufferViews[accessor.bufferView]);
+                glBindBuffer(GL_ARRAY_BUFFER, vbos[accessor.bufferView]);
+                int loc = (attrib.first == "POSITION") ? 0 : (attrib.first == "NORMAL") ? 1 : 2;
+                glEnableVertexAttribArray(loc);
+                glVertexAttribPointer(loc, accessor.type, accessor.componentType,
+                                      accessor.normalized ? GL_TRUE : GL_FALSE,
+                                      stride, BUFFER_OFFSET(accessor.byteOffset));
+            }
+            if (!model.textures.empty()) {
+                const auto &tex = model.textures[0];
+                if (tex.source > -1) {
+                    glGenTextures(1, &modelTexture);
+                    const auto &image = model.images[tex.source];
+                    glBindTexture(GL_TEXTURE_2D, modelTexture);
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                    GLenum format = (image.component == 1) ? GL_RED : (image.component == 2) ? GL_RG : (image.component == 3) ? GL_RGB : GL_RGBA;
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+                                 format, GL_UNSIGNED_BYTE, image.image.data());
+                }
+            }
+        }
+    }
+
+    glBindVertexArray(0);
+    return {vao, vbos};
 }
 
 void drawMesh(const std::map<int, GLuint>& vbos,
@@ -370,16 +396,18 @@ void drawModelNodes(const std::pair<GLuint, std::map<int, GLuint>>& vaoAndEbos,
     drawModelNodes(vaoAndEbos, model, model.nodes[node.children[i]]);
   }
 }
-void drawModel(const std::pair<GLuint, std::map<int, GLuint>>& vaoAndEbos,
-               tinygltf::Model &model) {
-  glBindVertexArray(vaoAndEbos.first);
 
-  const tinygltf::Scene &scene = model.scenes[model.defaultScene];
-  for (size_t i = 0; i < scene.nodes.size(); ++i) {
-    drawModelNodes(vaoAndEbos, model, model.nodes[scene.nodes[i]]);
-  }
-
-  glBindVertexArray(0);
+void drawModel(const std::pair<GLuint, std::map<int, GLuint>> &vaoAndEbos, tinygltf::Model &model) {
+    glBindVertexArray(vaoAndEbos.first);
+    for (const auto &mesh : model.meshes) {
+        for (const auto &primitive : mesh.primitives) {
+            const auto &accessor = model.accessors[primitive.indices];
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vaoAndEbos.second.at(accessor.bufferView));
+            glDrawElements(primitive.mode, accessor.count, accessor.componentType,
+                           BUFFER_OFFSET(accessor.byteOffset));
+        }
+    }
+    glBindVertexArray(0);
 }
 
 void dbgModel(tinygltf::Model &model) {
@@ -438,33 +466,6 @@ glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
   glm::mat4 mvp = Projection * view_mat * model_mat;
 
   return mvp;
-}
-
-void renderBackground(GLuint texID, int windowWidth, int windowHeight) {
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, texID);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(0, windowWidth, 0, windowHeight, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 1); glVertex2f(0, 0);
-    glTexCoord2f(1, 1); glVertex2f(windowWidth, 0);
-    glTexCoord2f(1, 0); glVertex2f(windowWidth, windowHeight);
-    glTexCoord2f(0, 0); glVertex2f(0, windowHeight);
-    glEnd();
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -527,6 +528,7 @@ static void error_callback(int error, const char *description) {
     std::cerr << "GLFW Error: " << description << std::endl;
 }
 
+
 int main(int argc, char **argv) {
     std::string filename = "models/Cube/Cube.gltf";
     if (argc > 1) filename = argv[1];
@@ -538,12 +540,17 @@ int main(int argc, char **argv) {
 
     Window window(800, 600, "GLTF Viewer with Video Background");
     glfwMakeContextCurrent(window.window);
-    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
 
     glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    BackgroundShader background;
+    GLuint backgroundTexture;
     glGenTextures(1, &backgroundTexture);
     glBindTexture(GL_TEXTURE_2D, backgroundTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -557,44 +564,52 @@ int main(int argc, char **argv) {
 
     Shaders shader;
     glUseProgram(shader.pid);
-
     GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
     GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
     GLuint sun_color_u = glGetUniformLocation(shader.pid, "sun_color");
+    GLuint tex_u = glGetUniformLocation(shader.pid, "tex");
+    glUniform1i(tex_u, 0);
 
     tinygltf::Model model;
     if (!loadModel(model, filename.c_str())) return -1;
     auto vaoAndEbos = bindModel(model);
 
-    glm::mat4 model_mat = glm::mat4(1.0f);
-    glm::mat4 model_rot = glm::mat4(1.0f);
-    glm::vec3 model_pos = glm::vec3(-3, 0, -3);
-    glm::vec3 sun_position = glm::vec3(3.0, 10.0, -5.0);
-    glm::vec3 sun_color = glm::vec3(1.0);
+    glm::mat4 model_mat(1.0f), model_rot(1.0f);
+    glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
 
     while (!window.Close()) {
         window.Resize();
-
-        glClearColor(0, 0, 0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Update background texture
         cv::Mat frame;
         if (cap.read(frame)) {
             cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+            glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, backgroundTexture);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols, frame.rows, 0,
                          GL_RGB, GL_UNSIGNED_BYTE, frame.data);
         }
 
+        // Draw background
+        glDisable(GL_DEPTH_TEST);
         int w, h;
         glfwGetFramebufferSize(window.window, &w, &h);
-        renderBackground(backgroundTexture, w, h);
+        background.render(backgroundTexture, w, h);
+        glEnable(GL_DEPTH_TEST);
 
-        glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
+        // Draw 3D model
+        glUseProgram(shader.pid);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, modelTexture);
+
         model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
+        glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
         model_mat = trans * model_rot;
-        glm::mat4 view_mat = genView(glm::vec3(2, 2, 20), model_pos);
-        glm::mat4 mvp = genMVP(view_mat, model_mat, 45.0f, w, h);
+
+        glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.01f, 1000.0f);
+        glm::mat4 mvp = proj * view * model_mat;
 
         glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
         glUniform3fv(sun_position_u, 1, &sun_position[0]);

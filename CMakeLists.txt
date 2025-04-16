@@ -57,6 +57,7 @@ file(GLOB SOURCES
         "src/main.cpp"
         "src/window.cpp"
         "src/shaders.cpp"
+        "src/background_shader.cpp"
         # "src/renderer.cpp"
 )
 
@@ -64,6 +65,7 @@ file(GLOB HEADERS
         "src/depth_camera.hpp"
         "src/window.h"
         "src/shaders.h"
+        "src/background_shader.h"
         # "src/renderer.hpp"
 )
 
