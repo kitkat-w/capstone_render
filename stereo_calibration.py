@@ -13,7 +13,7 @@ objp[:,:2] = np.mgrid[0:9,0:6].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
  
-images = glob.glob('captured_images/webcam/*.png')
+images = glob.glob('captured_images/rs/*.png')
 
 gray = cv.imread(images[0], cv.IMREAD_GRAYSCALE)
  
@@ -40,4 +40,4 @@ cv.destroyAllWindows()
 
 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-print (ret,mtx)
+print (ret,mtx, dist)

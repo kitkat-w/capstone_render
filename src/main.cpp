@@ -167,6 +167,7 @@
 #include "depth_camera.hpp"
 #include "common.hpp"
 #include "face_reconstruction.hpp"
+#include "second_cam.hpp"
 
 // #include <imgui.h>
 // #include <imgui_impl_glfw.h>
@@ -366,9 +367,10 @@ std::pair<GLuint, std::map<int, GLuint>> bindModel(tinygltf::Model &model) {
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                    GLenum format = (image.component == 1) ? GL_RED : (image.component == 2) ? GL_RG : (image.component == 3) ? GL_RGB : GL_RGBA;
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
-                                 format, GL_UNSIGNED_BYTE, image.image.data());
+                
+                // t = (image.component == 1) ? GL_RED : (image.component == 2) ? GL_RG : (image.component == 3) ? GL_RGB : GL_RGBA;
+                //     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+                //                  format, GL_UNSIGNED_BYTE, image.image.data());
                 }
             }
         }
@@ -491,7 +493,6 @@ glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
   return mvp;
 }
 
-
 void displayLoop(Window &window, const std::string &filename) {
   Shaders shader = Shaders();
   glUseProgram(shader.pid);
@@ -572,13 +573,6 @@ glm::mat4 getProjectionFromIntrinsics(const cv::Mat& K, int width, int height, f
 
 
 int main(int argc, char **argv) {
-  #ifdef NDEBUG
-    std::cout << "Release mode\n";
-  #else
-    std::cout << "Debug mode\n";
-  #endif
-
-
     std::string filename = "models/Cube/Cube.gltf";
     if (argc > 1) filename = argv[1];
 
@@ -587,7 +581,9 @@ int main(int argc, char **argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    Window window(800, 600, "GLTF Viewer with Video Background");
+    Window window(1280, 480, "GLTF Viewer with Video Background");
+    auto width = 1280;
+    auto height = 480;
     glfwMakeContextCurrent(window.window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD" << std::endl;
@@ -600,6 +596,8 @@ int main(int argc, char **argv) {
 
     BackgroundShader background;
     GLuint backgroundTexture;
+    GLuint secondaryTexture;
+    glGenTextures(1, &secondaryTexture);
     glGenTextures(1, &backgroundTexture);
     glBindTexture(GL_TEXTURE_2D, backgroundTexture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -613,9 +611,10 @@ int main(int argc, char **argv) {
     state->viewportHeight = 480;
 
     auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
+    auto secondaryCam = std::make_shared<UsArMirror::CameraInput>(state, 0);
     // auto faceRecon = std::make_shared<UsArMirror::FaceReconstruction>("share/");
 
-    Shaders shader = Shaders();
+    Shaders shader;
     glUseProgram(shader.pid);
     GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
     GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
@@ -626,33 +625,47 @@ int main(int argc, char **argv) {
     tinygltf::Model model;
     if (!loadModel(model, filename.c_str())) return -1;
     auto vaoAndEbos = bindModel(model);
-    dbgModel(model);
 
     glm::mat4 model_mat(1.0f), model_rot(1.0f);
     glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
+
 
     while (!window.Close()) {
         window.Resize();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-        cv::Mat color;
+        cv::Mat color, secColor, stitchedImage;
         rs2::frame depth;
-        if (depthCameraInput->getFrame(color)) {
-            rs2::frame raw_depth = depthCameraInput->getDepth();
-            depth = raw_depth.as<rs2::depth_frame>();
-            cv::cvtColor(color, color, cv::COLOR_BGR2RGB);
-    
-            glActiveTexture(GL_TEXTURE1); // assuming background uses texture unit 1
-            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color.cols, color.rows, 0,
-                        GL_RGB, GL_UNSIGNED_BYTE, color.data);
-        }
-    
 
-    
-        glDisable(GL_DEPTH_TEST);
-        background.render(backgroundTexture, 800, 600);
-        glEnable(GL_DEPTH_TEST);
+        if (secondaryCam->getFrame(secColor) && depthCameraInput->getFrame(color)) {
+            // Resize to same height (optional)
+            // if (secondaryColor.size() != depthColor.size()) {
+            //     cv::resize(depthColor, depthColor, secondaryColor.size());
+            // }
+            cv::imwrite("depth.png", color);
+            cv::imwrite("secondary.png", secColor);
+
+            depth = depthCameraInput->getDepth();
+
+        
+            // Stitch side-by-side
+            cv::hconcat(secColor, color, stitchedImage);
+        
+            // Convert BGR to RGB
+            cv::cvtColor(stitchedImage, stitchedImage, cv::COLOR_BGR2RGB);
+        
+            // Upload as single OpenGL texture
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stitchedImage.cols, stitchedImage.rows, 0,
+                        GL_RGB, GL_UNSIGNED_BYTE, stitchedImage.data);
+        
+            // Render full window
+            glDisable(GL_DEPTH_TEST);
+            background.render(backgroundTexture, width, height);
+            glEnable(GL_DEPTH_TEST);
+        }
+      
     
 
         // Draw 3D model
@@ -665,13 +678,8 @@ int main(int argc, char **argv) {
         model_mat = trans * model_rot;
 
         glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800 / (float)600, 0.01f, 1000.0f);
-        // glm::mat4 mvp = proj * view * model_mat;
-
-        glm::mat4 mvp = glm::ortho(-100.f, 100.f, -100.f, 100.f, 0.1f, 1000.f) *
-                glm::lookAt(glm::vec3(0, 0, 300), glm::vec3(0), glm::vec3(0, 1, 0)) *
-                glm::mat4(1.0f);
-
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.01f, 1000.0f);
+        glm::mat4 mvp = proj * view * model_mat;
 
         glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
         glUniform3fv(sun_position_u, 1, &sun_position[0]);
@@ -681,12 +689,12 @@ int main(int argc, char **argv) {
         glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
 
 
-        // drawModel(vaoAndEbos, model);
+        drawModel(vaoAndEbos, model);
         glfwSwapBuffers(window.window);
         glfwPollEvents();
     }
 
-    // glDeleteVertexArrays(1, &vaoAndEbos.first);
+    glDeleteVertexArrays(1, &vaoAndEbos.first);
     glfwTerminate();
     return 0;
 }

@@ -55,9 +55,28 @@ public:
         float cy = 216.85437825f;
         int width = 640;
         int height = 480;
-    };
+        std::array<float, 5> dist = {-0.05197052f, -0.11827853f, -0.00824217f, -0.00245351f, 0.09130217f};
+        cv::Mat getK() const {
+          return (cv::Mat_<float>(3, 3) <<
+              fx, 0, cx,
+              0, fy, cy,
+              0, 0, 1);
+        }
+        
+        cv::Mat getDist() const {
+            return cv::Mat(1, 5, CV_32F, (void*)dist.data()).clone();
+        }
+    
+      };
 
     Intrinsics intrinsics;
+
+    std::vector<cv::Point3f> getLandmarks3D();
+
+    cv::Mat getK() const;
+    cv::Mat getDist() const;
+
+
 
 private:
     void createGlTexture();
@@ -89,6 +108,9 @@ private:
     std::vector<std::vector<cv::Point2f>> landmarkPoints;
 
     cv::dnn::Net faceNet;
+
+    std::vector<cv::Point3f> landmark3D;
+    std::mutex landmarkMutex;
 };
 
 } // namespace UsArMirror

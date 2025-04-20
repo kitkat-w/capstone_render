@@ -93,11 +93,13 @@ void DepthCameraInput::captureLoop() {
 
 void DepthCameraInput::detectionLoop() {
     while (running) {
-        cv::Mat currentFrame;
+        cv::Mat currentFrame, depthMat;
         {
             std::lock_guard lock(frameMutex);
-            if (frame.empty()) continue;
+            if (frame.empty() || !depth_frame) continue;
             currentFrame = frame.clone();
+            depthMat = cv::Mat(depth_frame.get_height(), depth_frame.get_width(), CV_16UC1,
+                               (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP).clone();
         }
 
         cv::Mat blob = cv::dnn::blobFromImage(currentFrame, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0), false, false);
@@ -119,18 +121,39 @@ void DepthCameraInput::detectionLoop() {
         }
 
         std::vector<std::vector<cv::Point2f>> landmarks;
-        if (facemark->fit(currentFrame, faces, landmarks)) {
-            std::lock_guard lock(faceMutex);
-            faceBoxes = faces;
-            landmarkPoints = landmarks;
-            for (const auto& pt : landmarkPoints[0]) {
-                std::cout << "Point: " << pt << std::endl;
+        if (facemark->fit(currentFrame, faces, landmarks) && !landmarks.empty()) {
+            std::vector<cv::Point3f> points3D;
+            auto intr = impl->pipe.get_active_profile()
+                            .get_stream(RS2_STREAM_COLOR)
+                            .as<rs2::video_stream_profile>()
+                            .get_intrinsics();
+
+            for (const auto& pt : landmarks[0]) {
+                int x = static_cast<int>(pt.x);
+                int y = static_cast<int>(pt.y);
+                if (x < 0 || x >= depthMat.cols || y < 0 || y >= depthMat.rows) continue;
+
+                uint16_t d = depthMat.at<uint16_t>(y, x);
+                if (d == 0) continue;
+
+                float depth_m = d * 0.001f;
+                float px = (x - intr.ppx) / intr.fx;
+                float py = (y - intr.ppy) / intr.fy;
+                points3D.emplace_back(cv::Point3f(px * depth_m, py * depth_m, depth_m));
+            }
+
+            {
+                std::lock_guard lock(faceMutex);
+                faceBoxes = faces;
+                landmarkPoints = landmarks;
+                landmark3D = points3D;
             }
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
 }
+
 
 bool DepthCameraInput::getFrame(cv::Mat& outputFrame) {
     std::lock_guard lock(frameMutex);
@@ -140,15 +163,15 @@ bool DepthCameraInput::getFrame(cv::Mat& outputFrame) {
         std::lock_guard faceLock(faceMutex);
         for (size_t i = 0; i < faceBoxes.size(); ++i) {
             // cv::rectangle(outputFrame, faceBoxes[i], cv::Scalar(0, 255, 0), 2);
-            std::cout << landmarkPoints[i].size() << " landmarks for face " << i << std::endl;
-            for (const auto& pt : landmarkPoints[i]) {
-                cv::circle(outputFrame, pt, 2, cv::Scalar(255, 0, 0), -1);
-                if (pt.x >= 0 && pt.x < outputFrame.cols && pt.y >= 0 && pt.y < outputFrame.rows) {
-                    std::cout << "Point: " << pt << std::endl;
-                } else {
-                    std::cout << "Invalid point: " << pt << std::endl;
-                }
-            }
+            // std::cout << landmarkPoints[i].size() << " landmarks for face " << i << std::endl;
+            // for (const auto& pt : landmarkPoints[i]) {
+            //     cv::circle(outputFrame, pt, 2, cv::Scalar(255, 0, 0), -1);
+            //     // if (pt.x >= 0 && pt.x < outputFrame.cols && pt.y >= 0 && pt.y < outputFrame.rows) {
+            //     //     std::cout << "Point: " << pt << std::endl;
+            //     // } else {
+            //     //     std::cout << "Invalid point: " << pt << std::endl;
+            //     // }
+            // }
         }
 
         return true;
@@ -181,5 +204,11 @@ void DepthCameraInput::render() {
         glEnd();
     }
 }
+
+std::vector<cv::Point3f> DepthCameraInput::getLandmarks3D() {
+    std::lock_guard<std::mutex> lock(landmarkMutex);
+    return landmark3D;
+}
+
 
 } // namespace UsArMirror

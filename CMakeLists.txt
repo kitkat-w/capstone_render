@@ -55,6 +55,7 @@ find_library(EGL_LIB EGL REQUIRED)
 
 file(GLOB SOURCES
         "src/depth_camera.cpp"
+        "src/second_cam.cpp"
         "src/main.cpp"
         "src/window.cpp"
         "src/shaders.cpp"
@@ -65,6 +66,7 @@ file(GLOB SOURCES
 
 file(GLOB HEADERS
         "src/depth_camera.hpp"
+        "src/second_cam.hpp"
         "src/window.h"
         "src/shaders.h"
         "src/background_shader.h"
