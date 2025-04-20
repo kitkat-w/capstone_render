@@ -252,7 +252,6 @@ void bindMesh(std::map<int, GLuint>& vbos,
       if (accessor.type != TINYGLTF_TYPE_SCALAR) {
         size = accessor.type;
       }
-
       int vaa = -1;
       if (attrib.first.compare("POSITION") == 0) vaa = 0;
       if (attrib.first.compare("NORMAL") == 0) vaa = 1;
@@ -421,34 +420,51 @@ void dbgModel(tinygltf::Model &model) {
   for (auto &mesh : model.meshes) {
     std::cout << "mesh : " << mesh.name << std::endl;
     for (auto &primitive : mesh.primitives) {
-      const tinygltf::Accessor &indexAccessor =
-          model.accessors[primitive.indices];
+      const tinygltf::Accessor &indexAccessor = model.accessors[primitive.indices];
+      std::cout << "indexaccessor: count " << indexAccessor.count
+                << ", type " << indexAccessor.componentType << std::endl;
 
-      std::cout << "indexaccessor: count " << indexAccessor.count << ", type "
-                << indexAccessor.componentType << std::endl;
-
-      tinygltf::Material &mat = model.materials[primitive.material];
-      for (auto &mats : mat.values) {
-        std::cout << "mat : " << mats.first.c_str() << std::endl;
+      if (primitive.material >= 0 && primitive.material < model.materials.size()) {
+        tinygltf::Material &mat = model.materials[primitive.material];
+        for (auto &mats : mat.values) {
+          std::cout << "mat : " << mats.first.c_str() << std::endl;
+        }
       }
 
       for (auto &image : model.images) {
         std::cout << "image name : " << image.uri << std::endl;
         std::cout << "  size : " << image.image.size() << std::endl;
-        std::cout << "  w/h : " << image.width << "/" << image.height
-                  << std::endl;
+        std::cout << "  w/h : " << image.width << "/" << image.height << std::endl;
       }
 
       std::cout << "indices : " << primitive.indices << std::endl;
-      std::cout << "mode     : "
-                << "(" << primitive.mode << ")" << std::endl;
+      std::cout << "mode     : " << "(" << primitive.mode << ")" << std::endl;
 
       for (auto &attrib : primitive.attributes) {
         std::cout << "attribute : " << attrib.first.c_str() << std::endl;
       }
+
+      // 👇 Print vertex positions:
+      if (primitive.attributes.find("POSITION") != primitive.attributes.end()) {
+        const auto &accessor = model.accessors[primitive.attributes.at("POSITION")];
+        const auto &bufferView = model.bufferViews[accessor.bufferView];
+        const auto &buffer = model.buffers[bufferView.buffer];
+
+        const unsigned char* dataPtr = buffer.data.data() + bufferView.byteOffset + accessor.byteOffset;
+        size_t count = accessor.count;
+        int stride = accessor.ByteStride(bufferView);
+        if (stride == 0) stride = sizeof(float) * 3; // Default stride for vec3
+
+        std::cout << "Vertex positions:" << std::endl;
+        for (size_t i = 0; i < count; ++i) {
+          const float* pos = reinterpret_cast<const float*>(dataPtr + i * stride);
+          std::cout << "  [" << i << "]: (" << pos[0] << ", " << pos[1] << ", " << pos[2] << ")" << std::endl;
+        }
+      }
     }
   }
 }
+
 
 glm::mat4 genView(glm::vec3 pos, glm::vec3 lookat) {
   // Camera matrix
@@ -582,6 +598,9 @@ int main(int argc, char **argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glDisable(GL_CULL_FACE);
+
     auto state = std::make_shared<UsArMirror::State>();
     state->viewportWidth = 640;
     state->viewportHeight = 480;
@@ -589,7 +608,7 @@ int main(int argc, char **argv) {
     auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
     auto faceRecon = std::make_shared<UsArMirror::FaceReconstruction>("share/");
 
-    Shaders shader;
+    Shaders shader = Shaders();
     glUseProgram(shader.pid);
     GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
     GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
@@ -598,115 +617,95 @@ int main(int argc, char **argv) {
     glUniform1i(tex_u, 0);
 
     tinygltf::Model model;
-    if (!loadModel(model, filename.c_str())) return -1;
-    auto vaoAndEbos = bindModel(model);
+    // if (!loadModel(model, filename.c_str())) return -1;
+    // auto vaoAndEbos = bindModel(model);
+    dbgModel(model);
 
     glm::mat4 model_mat(1.0f), model_rot(1.0f);
     glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
 
-    GLuint faceVao = 0, faceVbo = 0, faceTex = 0;
+    GLuint faceVao = 0, faceVbo = 0, faceTex = 0, faceEbo = 0;
     glm::mat4 faceModelMatrix;
     int faceVertexCount = 0;
+    std::pair<GLuint, std::map<int, GLuint>> faceVaoAndVbos;
 
     cv::Mat K = (cv::Mat_<float>(3, 3) << 615.0f, 0.0f, 320.0f, 0.0f, 615.0f, 240.0f, 0.0f, 0.0f, 1.0f);
     cv::Mat extrinsics = cv::Mat::eye(4, 4, CV_32F);
 
     while (!window.Close()) {
-        window.Resize();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      window.Resize();
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+      cv::Mat color;
+      rs2::frame depth;
+      if (depthCameraInput->getFrame(color)) {
+          rs2::frame raw_depth = depthCameraInput->getDepth();
+          depth = raw_depth.as<rs2::depth_frame>();
+          cv::cvtColor(color, color, cv::COLOR_BGR2RGB);
+  
+          glActiveTexture(GL_TEXTURE1); // assuming background uses texture unit 1
+          glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color.cols, color.rows, 0,
+                       GL_RGB, GL_UNSIGNED_BYTE, color.data);
+      }
+  
+      static bool fitted = false;
+      if (glfwGetKey(window.window, GLFW_KEY_F) == GLFW_PRESS && !fitted) {
+          fitted = true;
+          faceRecon->fitAndRender(
+              color, depth,
+              K,
+              extrinsics, faceVaoAndVbos,
+              faceVao, faceVbo, faceEbo, faceTex, faceModelMatrix,
+              color.cols, color.rows, faceVertexCount
+          );
+          std::cout << "Fitted and uploaded face model.\n";
+      }
+      if (glfwGetKey(window.window, GLFW_KEY_F) == GLFW_RELEASE) {
+          fitted = false;
+      }
+  
+      glDisable(GL_DEPTH_TEST);
+      background.render(backgroundTexture, 800, 600);
+      glEnable(GL_DEPTH_TEST);
+  
+      if (faceVao && faceVertexCount > 0) {
+          // std::cout << "[Render] Entered face render block\n";
+          glUseProgram(shader.pid);
+          glActiveTexture(GL_TEXTURE0);
+          cv::Mat image = cv::imread("texture_grid.png");
+          glBindTexture(GL_TEXTURE_2D, faceTex);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.cols, image.rows, 0,
+                       GL_RGB, GL_UNSIGNED_BYTE, image.data);
+  
+          glm::mat4 view(1.0f);
+          for (int r = 0; r < 3; ++r)
+              for (int c = 0; c < 4; ++c)
+                  view[c][r] = extrinsics.at<float>(r, c);
+  
+          glm::mat4 proj = getProjectionFromIntrinsics(K, color.cols, color.rows);
+          // glm::mat4 mvp = proj * view * faceModelMatrix;
+          glm::mat4 mvp = glm::perspective(glm::radians(45.0f), 800/600.0f, 0.1f, 1000.0f);
+  
+          glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
+          glUniform3fv(sun_position_u, 1, &sun_position[0]);
+          glUniform3fv(sun_color_u, 1, &sun_color[0]);
+          // glUniform1i(glGetUniformLocation(shader.pid, "tex"), 0);  // Set sampler2D to texture unit 0
 
-        cv::Mat color;
-        rs2::frame depth;
-        if (depthCameraInput->getFrame(color)) {
-            depth = depthCameraInput->getDepth();
-            cv::cvtColor(color, color, cv::COLOR_BGR2RGB);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color.cols, color.rows, 0,
-                GL_RGB, GL_UNSIGNED_BYTE, color.data);
-        }
+          // glBindVertexArray(faceVao);
+          // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceEbo);
 
-        static bool fitted = false;
-        if (glfwGetKey(window.window, GLFW_KEY_F) == GLFW_PRESS && !fitted) {
-            fitted = true;
-        
-            // rs2::depth_frame raw_depth = depthCameraInput->getDepth();
-            // rs2_intrinsics intrin;
-            // rs2::video_stream_profile color_profile = raw_depth.get_profile().as<rs2::video_stream_profile>();
-            // if (!color_profile.get_intrinsics()) {
-            //     std::cerr << "Failed to get camera intrinsics." << std::endl;
-            //     continue;
-            // }
-            // std::cout << "Got video_stream_profile." << std::endl;
-            // intrin = color_profile.get_intrinsics();
-            // std::cout << "Got intrin." << std::endl;
-        
-            faceRecon->fitAndRender(
-                color, depth,
-                K,
-                extrinsics,
-                faceVao, faceVbo, faceTex, faceModelMatrix,
-                color.cols, color.rows, faceVertexCount
-            );
-        
-            std::cout << "Fitted and uploaded face model." << std::endl;
-        }
+          GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
+          glUniform1f(opacityLoc, 1.0f); // 0.0 = transparent, 1.0 = opaque
 
-        glDisable(GL_DEPTH_TEST);
-        background.render(backgroundTexture,800,600);
-        glEnable(GL_DEPTH_TEST);
-
-        glm::mat4 tempView(1.0f);
-
-        if (faceVao && faceVertexCount > 0) {
-            std::cout << "[Render] Entered face render block\n";
-            std::cout << "[Render] faceVao: " << faceVao << ", faceVertexCount: " << faceVertexCount << std::endl;
-            std::cout << "[Render] faceTex ID: " << faceTex << std::endl;
-            
-            glUseProgram(shader.pid);
-            glBindVertexArray(faceVao);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, faceTex);
-
-
-            glm::mat4 view(1.0f);
-            for (int r = 0; r < 3; ++r)
-                for (int c = 0; c < 4; ++c)
-                    view[c][r] = extrinsics.at<float>(r, c);  // note transpose for column-major
-
-            glm::mat4 proj = getProjectionFromIntrinsics(K, color.cols, color.rows);
-            glm::mat4 mvp = proj * view * faceModelMatrix;
-
-            tempView = mvp;
-
-            mvp = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, -3));
-            mvp = glm::scale(mvp, glm::vec3(5.0f));
-
-            // With this:
-            mvp = glm::mat4(1.0f);
-            // Apply slight scale to see details, but not too big
-            mvp = glm::scale(mvp, glm::vec3(1.0f)); 
-            // Move it slightly forward if needed
-            mvp = glm::translate(mvp, glm::vec3(0.0f, 0.0f, 0.0f));
-
-            std::cout << "[Render] MVP matrix:\n";
-            for (int row = 0; row < 4; ++row) {
-                std::cout << "  [ ";
-                for (int col = 0; col < 4; ++col) {
-                    std::cout << mvp[col][row];  // glm is column-major
-                    if (col < 3) std::cout << ", ";
-                }
-                std::cout << " ]\n";
-            }
-
-
-            glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
-            glUniform3fv(sun_position_u, 1, &sun_position[0]);
-            glUniform3fv(sun_color_u, 1, &sun_color[0]);
-
-            glDrawElements(GL_TRIANGLES, faceVertexCount, GL_UNSIGNED_SHORT, 0);
-
-            glBindVertexArray(0);
+          faceRecon->drawEosMesh(faceVaoAndVbos, faceVertexCount);
+          // glDrawElements(GL_TRIANGLES, faceVertexCount, GL_UNSIGNED_SHORT, 0);
+          GLenum err = glGetError();
+          if (err != GL_NO_ERROR) {
+              std::cerr << "GL ERROR: " << err << std::endl;
+          }
+          // faceRecon->drawEosMesh(faceVaoAndVbos, faceVertexCount);
+          glBindVertexArray(0);
         }
 
         // // Draw 3D model
@@ -720,8 +719,12 @@ int main(int argc, char **argv) {
 
         // glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
         // glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800 / (float)600, 0.01f, 1000.0f);
-        // glm::mat4 mvp = tempView;
-        // //view*proj*model_mat;
+        // // glm::mat4 mvp = proj * view * model_mat;
+
+        // glm::mat4 mvp = glm::ortho(-100.f, 100.f, -100.f, 100.f, 0.1f, 1000.f) *
+        //         glm::lookAt(glm::vec3(0, 0, 300), glm::vec3(0), glm::vec3(0, 1, 0)) *
+        //         glm::mat4(1.0f);
+
 
         // glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
         // glUniform3fv(sun_position_u, 1, &sun_position[0]);
@@ -732,12 +735,11 @@ int main(int argc, char **argv) {
 
 
         // drawModel(vaoAndEbos, model);
-
         glfwSwapBuffers(window.window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &vaoAndEbos.first);
+    // glDeleteVertexArrays(1, &vaoAndEbos.first);
     glfwTerminate();
     return 0;
 }

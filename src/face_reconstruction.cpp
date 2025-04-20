@@ -5,7 +5,7 @@
 #include <eos/render/draw_utils.hpp>
 #include <eos/render/texture_extraction.hpp>
 #include <eos/fitting/fitting.hpp>
-
+#include <eos/render/render.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <spdlog/spdlog.h>
 
@@ -69,13 +69,68 @@ std::vector<Eigen::Vector3f> compute_vertex_normals(
 }
 
 
+
+std::pair<GLuint, std::map<int, GLuint>> FaceReconstruction::bindEosMesh(
+    const std::vector<float>& vertexData,
+    const std::vector<unsigned short>& indices) {
+
+    std::map<int, GLuint> vbos;
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // VBO for interleaved vertex data
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    vbos[0] = vbo;
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
+
+    // EBO for indices
+    GLuint ebo;
+    glGenBuffers(1, &ebo);
+    vbos[1] = ebo;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), indices.data(), GL_STATIC_DRAW);
+
+    // Attribute layout: position (0), normal (1), texcoord (2)
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+    glBindVertexArray(0);
+    return {vao, vbos};
+}
+
+void FaceReconstruction::drawEosMesh(
+    const std::pair<GLuint, std::map<int, GLuint>>& vaoAndVbos,
+    int indexCount)
+{
+    // glUseProgram(shaderProgram);
+    glBindVertexArray(vaoAndVbos.first);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vaoAndVbos.second.at(1));
+
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, texture);
+    glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_SHORT, 0);
+
+    // glBindVertexArray(0);
+}
+
 void FaceReconstruction::fitAndRender(
     const cv::Mat& colorImage,
     const rs2::depth_frame& depthFrame,
-    const cv::Mat& cameraIntrinsics,         // 3x3
-    const cv::Mat& extrinsicsDepthToColor,   // 4x4
+    const cv::Mat& cameraIntrinsics,
+    const cv::Mat& extrinsicsDepthToColor,
+    std::pair<GLuint, std::map<int, GLuint>> & vaoAndVbos,
     GLuint& vao,
     GLuint& vbo,
+    GLuint& ebo,
     GLuint& texture,
     glm::mat4& model_matrix,
     int width,
@@ -139,20 +194,42 @@ void FaceReconstruction::fitAndRender(
         5, eos::cpp17::nullopt, 30.0f);
     spdlog::info("[fitAndRender] Fitting done. Mesh has {} vertices and {} faces.",
         mesh.vertices.size(), mesh.tvi.size());
-    
-    // Step 4: Texture extraction
+
+
     const auto texturemap = eos::render::extract_texture(
         mesh, rendering_params.get_modelview(), rendering_params.get_projection(),
         eos::render::ProjectionType::Orthographic, eos::core::from_mat_with_alpha(colorImage));
+    
+    // Save OBJ mesh for debugging
+    std::string output_obj = "debug_face.obj";
+    eos::core::write_obj(mesh, output_obj);
 
-    // Step 5: Upload vertex data with position + normal + texcoord
-    // Compute vertex normals
-    // Upload vertex data
-    std::vector<float> vertexData; // interleaved: pos (3) + normal (3) + texcoord (2)
+    // Render the fitted mesh and save PNG
+    Eigen::Matrix4f eos_modelview = rendering_params.get_modelview();
+    Eigen::Matrix4f eos_projection = rendering_params.get_projection();
+
+    auto rendered = eos::render::render(
+        mesh,
+        eos_modelview,
+        eos_projection,
+        width, height,
+        true,  // enable backface culling
+        true,  // enable shading
+        true   // enable texture
+    );
+
+    // Save rendering as image
+    cv::Mat rendered_bgr = eos::core::to_mat(texturemap);
+    cv::imwrite("debug_face_render.png", rendered_bgr);
+    spdlog::info("[fitAndRender] Saved debug_face.obj and debug_face_render.png");
+
+            
+    // Step 4: Interleaved vertex data
+    std::vector<float> vertexData;
     for (size_t i = 0; i < mesh.vertices.size(); ++i) {
         const auto& v = mesh.vertices[i];
         const auto& uv = mesh.texcoords.empty() ? Eigen::Vector2f(0, 0) : mesh.texcoords[i];
-        Eigen::Vector3f n(0, 0, 1); // use dummy normal or compute manually
+        Eigen::Vector3f n(0, 0, 1); // Optional: compute real normals
 
         vertexData.insert(vertexData.end(), {v[0], v[1], v[2], n[0], n[1], n[2], uv[0], uv[1]});
     }
@@ -164,35 +241,9 @@ void FaceReconstruction::fitAndRender(
         indices.push_back(static_cast<unsigned short>(tri[2]));
     }
 
-    // Generate buffers
-    if (vao == 0) glGenVertexArrays(1, &vao);
-    if (vbo == 0) glGenBuffers(1, &vbo);
-    GLuint ebo = 0; glGenBuffers(1, &ebo);
-
-    glBindVertexArray(vao);
-
-    // Vertex buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
-
-    // Index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), indices.data(), GL_STATIC_DRAW);
-
-    // Position
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
-    // Normal
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-
-    // TexCoord
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-    glBindVertexArray(0);
-    spdlog::info("[fitAndRender] Uploaded {} vertices to OpenGL.", faceVertexCount);
+    // Step 5: Upload using shared function
+    bindEosMesh(vertexData, indices);
+    faceVertexCount = static_cast<int>(indices.size());
 
     // Step 6: Upload texture
     if (texture == 0) glGenTextures(1, &texture);
@@ -204,13 +255,12 @@ void FaceReconstruction::fitAndRender(
         spdlog::error("[fitAndRender] Texture extraction failed.");
         return;
     }
-    spdlog::info("[fitAndRender] Texture map size: {}x{}", texmat.cols, texmat.rows);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texmat.cols, texmat.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, texmat.data);
 
-    // Step 7: Compute Model Matrix (camera-aligned placeholder)
+    // Step 7: Model matrix (still camera aligned unless using extrinsics)
     model_matrix = glm::mat4(1.0f);
-    model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, -3.0f));
-    model_matrix = glm::scale(model_matrix, glm::vec3(5.0f));
+    model_matrix = glm::translate(model_matrix, glm::vec3(0.0f, 0.0f, 10.0f));
+    model_matrix = glm::scale(model_matrix, glm::vec3(1.5f));
 }
 
 }

@@ -36,28 +36,40 @@
 
 namespace UsArMirror {
 
-class FaceReconstruction {
+    class FaceReconstruction {
     public:
-        explicit FaceReconstruction(const std::string& model_path);
-
-    
-        void loadEOSModels(const std::string& path);
+        FaceReconstruction(const std::string& model_path);
     
         void fitAndRender(
             const cv::Mat& colorImage,
-            const rs2::depth_frame&  depthImage,
-            const cv::Mat&  cameraIntrinsics,         // 3x3
-            const cv::Mat& extrinsicsDepthToColor,   // 4x4
+            const rs2::depth_frame& depthFrame,
+            const cv::Mat& cameraIntrinsics,
+            const cv::Mat& extrinsicsDepthToColor,
+            std::pair<GLuint, std::map<int, GLuint>>& vaoAndVbos,
             GLuint& vao,
             GLuint& vbo,
+            GLuint& ebo,
             GLuint& texture,
             glm::mat4& model_matrix,
             int width,
             int height,
             int& faceVertexCount);
-        
+    
+        std::pair<GLuint, std::map<int, GLuint>> bindEosMesh(
+            const std::vector<float>& vertexData,
+            const std::vector<unsigned short>& indices);
+    
+        void drawEosMesh(
+            const std::pair<GLuint, std::map<int, GLuint>>& vaoAndVbos,
+            int indexCount);
     
     private:
+        void loadEOSModels(const std::string& path);
+        void generateMeshFromCoefficients(
+            const std::vector<float>& coefficients,
+            const std::vector<unsigned short>& indices,
+            const std::vector<float>& vertexData);
+    
         eos::morphablemodel::MorphableModel morphable_model_;
         eos::core::LandmarkMapper landmark_mapper_;
         eos::morphablemodel::EdgeTopology edge_topology_;
@@ -68,4 +80,5 @@ class FaceReconstruction {
         dlib::shape_predictor predictor;
     };
     
-}
+    } // namespace UsArMirror
+    
