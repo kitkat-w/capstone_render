@@ -1,7 +1,7 @@
 Detecting compiler hash for triplet arm64-linux...
 Compiler found: /usr/bin/c++
 All requested packages are currently installed.
-Total install time: 575 us
+Total install time: 523 us
 The package fmt provides CMake targets:
 
     find_package(fmt CONFIG REQUIRED)

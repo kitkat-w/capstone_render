@@ -1,11 +1,10 @@
 #include "depth_camera.hpp"
 
+#include <iostream>
 #include <librealsense2/rs.hpp>
 #include <opencv2/opencv.hpp>
-#include <dlib/opencv.h>
-#include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/image_processing/render_face_detections.h>
-#include <dlib/image_processing.h>
+#include <opencv2/dnn.hpp>
+#include <opencv2/face.hpp>
 #include <spdlog/spdlog.h>
 #include <thread>
 #include <mutex>
@@ -13,7 +12,7 @@
 namespace UsArMirror {
 
 DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
-    : state(state), running(true), detectRunning(true), textureId(-1), depth_frame(rs2::frame()) {
+    : state(state), running(true), textureId(-1), depth_frame(rs2::frame()) {
     try {
         impl = std::make_unique<DepthCameraInputImpl>();
         rs2::config cfg;
@@ -27,33 +26,28 @@ DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
 
         spdlog::info("RealSense camera started: width={}, height={}", width, height);
 
-        detector = dlib::get_frontal_face_detector();
-        try {
-            dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> predictor;
-        } catch (dlib::serialization_error& e) {
-            throw std::runtime_error(std::string("Could not load landmark model: ") + e.what());
-        }
+        faceNet = cv::dnn::readNetFromCaffe(
+            "deploy.prototxt",
+            "res10_300x300_ssd_iter_140000.caffemodel");
 
-        spdlog::info("Deserialized dlib predictor");
+        facemark = cv::face::FacemarkLBF::create();
+        facemark->loadModel("lbfmodel.yaml");
+        spdlog::info("Loaded OpenCV FacemarkLBF model");
+
     } catch (const rs2::error& e) {
         throw std::runtime_error(std::string("RealSense error: ") + e.what());
     }
 
     createGlTexture();
     captureThread = std::thread(&DepthCameraInput::captureLoop, this);
-    landmarkThread = std::thread(&DepthCameraInput::landmarkLoop, this);
+    detectionThread = std::thread(&DepthCameraInput::detectionLoop, this);
 }
 
 DepthCameraInput::~DepthCameraInput() {
     running = false;
-    detectRunning = false;
 
-    if (captureThread.joinable()) {
-        captureThread.join();
-    }
-    if (landmarkThread.joinable()) {
-        landmarkThread.join();
-    }
+    if (captureThread.joinable()) captureThread.join();
+    if (detectionThread.joinable()) detectionThread.join();
 
     if (impl) {
         impl->pipe.stop();
@@ -83,11 +77,10 @@ void DepthCameraInput::captureLoop() {
             if (color) {
                 const uint8_t* data = reinterpret_cast<const uint8_t*>(color.get_data());
                 cv::Mat raw(color.get_height(), color.get_width(), CV_8UC3, (void*)data, cv::Mat::AUTO_STEP);
-                cv::Mat processed = raw.clone();
-
                 std::lock_guard lock(frameMutex);
-                frame = processed;
+                frame = raw.clone();
             }
+
             if (depth) {
                 std::lock_guard lock(frameMutex);
                 depth_frame = depth;
@@ -98,66 +91,44 @@ void DepthCameraInput::captureLoop() {
     }
 }
 
-void DepthCameraInput::landmarkLoop() {
-    while (detectRunning) {
-        cv::Mat currentFrame, depthMat;
-
+void DepthCameraInput::detectionLoop() {
+    while (running) {
+        cv::Mat currentFrame;
         {
             std::lock_guard lock(frameMutex);
-            if (frame.empty() || !depth_frame) continue;
-
+            if (frame.empty()) continue;
             currentFrame = frame.clone();
-            depthMat = cv::Mat(depth_frame.get_height(), depth_frame.get_width(), CV_16UC1,
-                               (void*)depth_frame.get_data(), cv::Mat::AUTO_STEP).clone();
         }
 
-        auto start = std::chrono::high_resolution_clock::now();
-        dlib::cv_image<dlib::bgr_pixel> dlib_img(currentFrame);
-        std::vector<dlib::rectangle> faces = detector(dlib_img);
-        if (faces.empty()) continue;
+        cv::Mat blob = cv::dnn::blobFromImage(currentFrame, 1.0, cv::Size(300, 300), cv::Scalar(104.0, 177.0, 123.0), false, false);
+        faceNet.setInput(blob);
+        cv::Mat detections = faceNet.forward();
 
-        dlib::full_object_detection shape = predictor(dlib_img, faces[0]);
+        std::vector<cv::Rect> faces;
+        cv::Mat detectionMat(detections.size[2], detections.size[3], CV_32F, detections.ptr<float>());
 
-        auto end = std::chrono::high_resolution_clock::now(); 
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-        spdlog::info("Detect face took {} µs", duration);
-
-        std::vector<dlib::point> points2D;
-        std::vector<cv::Point3f> points3D;
-
-        start = std::chrono::high_resolution_clock::now();
-
-        for (int i = 0; i < shape.num_parts(); ++i) {
-            int x = shape.part(i).x();
-            int y = shape.part(i).y();
-
-            if (x < 0 || x >= depthMat.cols || y < 0 || y >= depthMat.rows) continue;
-
-            uint16_t d = depthMat.at<uint16_t>(y, x);
-            if (d == 0) continue;
-
-            float depth_m = d * 0.001f;
-
-            float px = (x - intrinsics.cx) / intrinsics.fx;
-            float py = (y - intrinsics.cy) / intrinsics.fy;
-            cv::Point3f pt3d(px * depth_m, py * depth_m, depth_m);
-
-            points2D.push_back(shape.part(i));
-            points3D.push_back(pt3d);
+        for (int i = 0; i < detectionMat.rows; ++i) {
+            float confidence = detectionMat.at<float>(i, 2);
+            if (confidence > 0.9f) {
+                int x1 = static_cast<int>(detectionMat.at<float>(i, 3) * currentFrame.cols);
+                int y1 = static_cast<int>(detectionMat.at<float>(i, 4) * currentFrame.rows);
+                int x2 = static_cast<int>(detectionMat.at<float>(i, 5) * currentFrame.cols);
+                int y2 = static_cast<int>(detectionMat.at<float>(i, 6) * currentFrame.rows);
+                faces.emplace_back(cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2)));
+            }
         }
 
-        end = std::chrono::high_resolution_clock::now(); 
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-        spdlog::info("Convert to 3d took {} µs", duration);
-
-        {
-            std::lock_guard lock(landmarkMutex);
-            landmark2D = std::move(points2D);
-            landmark3D = std::move(points3D);
-            hasLandmarks = true;
+        std::vector<std::vector<cv::Point2f>> landmarks;
+        if (facemark->fit(currentFrame, faces, landmarks)) {
+            std::lock_guard lock(faceMutex);
+            faceBoxes = faces;
+            landmarkPoints = landmarks;
+            for (const auto& pt : landmarkPoints[0]) {
+                std::cout << "Point: " << pt << std::endl;
+            }
         }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
 }
 
@@ -166,45 +137,28 @@ bool DepthCameraInput::getFrame(cv::Mat& outputFrame) {
     if (!frame.empty()) {
         outputFrame = frame.clone();
 
-        if (hasLandmarks) {
-            auto start = std::chrono::high_resolution_clock::now();  // ⏱️ start timer
-
-            std::lock_guard lmLock(landmarkMutex);
-            for (const auto& pt : landmark2D) {
-                cv::circle(outputFrame, cv::Point(pt.x(), pt.y()), 2, cv::Scalar(0, 255, 0), -1);
+        std::lock_guard faceLock(faceMutex);
+        for (size_t i = 0; i < faceBoxes.size(); ++i) {
+            // cv::rectangle(outputFrame, faceBoxes[i], cv::Scalar(0, 255, 0), 2);
+            std::cout << landmarkPoints[i].size() << " landmarks for face " << i << std::endl;
+            for (const auto& pt : landmarkPoints[i]) {
+                cv::circle(outputFrame, pt, 2, cv::Scalar(255, 0, 0), -1);
+                if (pt.x >= 0 && pt.x < outputFrame.cols && pt.y >= 0 && pt.y < outputFrame.rows) {
+                    std::cout << "Point: " << pt << std::endl;
+                } else {
+                    std::cout << "Invalid point: " << pt << std::endl;
+                }
             }
-
-            auto end = std::chrono::high_resolution_clock::now();  // ⏱️ stop timer
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-            // spdlog::info("Landmark overlay took {} µs", duration);
         }
 
         return true;
     }
-
-    spdlog::info("Frame is empty");
     return false;
 }
 
-
 rs2::depth_frame DepthCameraInput::getDepth() {
     std::lock_guard lock(frameMutex);
-    if (depth_frame && depth_frame.is<rs2::depth_frame>()) {
-        return depth_frame;
-    } else {
-        spdlog::warn("Depth frame is empty or invalid.");
-        return rs2::frame();  // return an explicitly empty frame
-    }
-}
-
-std::vector<dlib::point> DepthCameraInput::getLandmarks2D() {
-    std::lock_guard lock(landmarkMutex);
-    return landmark2D;
-}
-
-std::vector<cv::Point3f> DepthCameraInput::getLandmarks3D() {
-    std::lock_guard lock(landmarkMutex);
-    return landmark3D;
+    return depth_frame;
 }
 
 cv::Mat DepthCameraInput::getLastColorFrame() const {
@@ -217,15 +171,14 @@ void DepthCameraInput::render() {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, textureId);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame.cols, frame.rows, GL_BGR, GL_UNSIGNED_BYTE, frame.data);
-        {
-            glColor3f(1.0f, 1.0f, 1.0f);
-            glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2f(1.0f, -1.0f);
-            glTexCoord2f(1.0f, 1.0f); glVertex2f(-1.0f, -1.0f);
-            glTexCoord2f(1.0f, 0.0f); glVertex2f(-1.0f, 1.0f);
-            glTexCoord2f(0.0f, 0.0f); glVertex2f(1.0f, 1.0f);
-            glEnd();
-        }
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2f(1.0f, -1.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex2f(-1.0f, -1.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex2f(-1.0f, 1.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex2f(1.0f, 1.0f);
+        glEnd();
     }
 }
 

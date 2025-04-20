@@ -8,83 +8,87 @@
 #include <optional>
 #include <librealsense2/rs.hpp>
 
-#include <dlib/image_processing.h>
-#include <dlib/image_io.h>
-#include <dlib/opencv.h>
-#include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/image_processing/render_face_detections.h>
-#include <dlib/image_processing.h>
+#include <vector>
+#include <opencv2/core.hpp>
+#include <opencv2/dnn.hpp>
 
 #include "common.hpp"
 
+#include <vector>
+#include <atomic>
+#include <opencv2/core.hpp>
+#include <opencv2/dnn.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/face.hpp>
+
 namespace UsArMirror {
 
+// struct State {
+//     int viewportWidth;
+//     int viewportHeight;
+// };
+
 struct DepthCameraInputImpl {
-  rs2::pipeline pipe;
-  rs2::colorizer color_map;
-  rs2::frameset frames;
-  rs2::frame color_frame;
-  rs2::frame depth_frame;
+    rs2::pipeline pipe;
+    rs2::colorizer color_map;
+    rs2::frameset frames;
+    rs2::frame color_frame;
+    rs2::frame depth_frame;
 };
 
 class DepthCameraInput {
-  public:
+public:
     explicit DepthCameraInput(const std::shared_ptr<State>& state, int idx);
     ~DepthCameraInput();
 
-    bool getFrame(cv::Mat &outputFrame);
+    bool getFrame(cv::Mat& outputFrame);
     void render();
 
     int width, height;
-
     cv::Mat getLastColorFrame() const;
     rs2::depth_frame getDepth();
 
-    dlib::full_object_detection landmarks;
-    bool hasLandmarks = false;
-
     struct Intrinsics {
-      float fx = 302.02243162f;
-      float fy = 301.80520504f;
-      float cx = 324.73866457f;
-      float cy = 216.85437825f;
-      int width = 640;
-      int height = 480;
+        float fx = 302.02243162f;
+        float fy = 301.80520504f;
+        float cx = 324.73866457f;
+        float cy = 216.85437825f;
+        int width = 640;
+        int height = 480;
     };
 
     Intrinsics intrinsics;
 
-  private:
-    std::shared_ptr<State> state;
-    bool running;
-    std::mutex frameMutex;
-    std::thread captureThread;
-    cv::Mat frame;
-    rs2::depth_frame depth_frame;
-    GLuint textureId;
-    dlib::frontal_face_detector detector;
-    dlib::shape_predictor predictor;
-
-    // struct DepthCameraInputImpl;
-    std::unique_ptr<DepthCameraInputImpl> impl;
-    cv::Mat detectLandmarks(
-      cv::Mat processed);
-
+private:
     void createGlTexture();
     void captureLoop();
+    void detectionLoop();
 
-    int frameCount = 0; 
-    std::thread landmarkThread;
-    std::atomic<bool> detectRunning;
-    std::mutex landmarkMutex;
+    // State
+    std::shared_ptr<State> state;
+    std::unique_ptr<DepthCameraInputImpl> impl;
+    std::atomic<bool> running = true;
 
-    std::vector<dlib::point> landmark2D;
-    std::vector<cv::Point3f> landmark3D;
+    // OpenGL texture
+    GLuint textureId;
 
-    std::vector<dlib::point> getLandmarks2D();
-    std::vector<cv::Point3f> getLandmarks3D();
-    void landmarkLoop();
+    // Frame data
+    mutable std::mutex frameMutex;
+    cv::Mat frame;
+    rs2::depth_frame depth_frame;
 
+    // Threads
+    std::thread captureThread;
+    std::thread detectionThread;
 
+    // Face detection & landmarks
+    cv::CascadeClassifier faceDetector;
+    cv::Ptr<cv::face::Facemark> facemark;
+    std::mutex faceMutex;
+    std::vector<cv::Rect> faceBoxes;
+    std::vector<std::vector<cv::Point2f>> landmarkPoints;
+
+    cv::dnn::Net faceNet;
 };
+
 } // namespace UsArMirror
