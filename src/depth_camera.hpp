@@ -27,15 +27,6 @@ struct DepthCameraInputImpl {
   rs2::frame depth_frame;
 };
 
-struct Intrinsics {
-  float fx = 615.0f;  // focal length in pixels (x)
-  float fy = 615.0f;  // focal length in pixels (y)
-  float cx = 320.0f;  // optical center x (half of width)
-  float cy = 240.0f;  // optical center y (half of height)
-  int width = 640;
-  int height = 480;
-};
-
 class DepthCameraInput {
   public:
     explicit DepthCameraInput(const std::shared_ptr<State>& state, int idx);
@@ -51,6 +42,17 @@ class DepthCameraInput {
 
     dlib::full_object_detection landmarks;
     bool hasLandmarks = false;
+
+    struct Intrinsics {
+      float fx = 302.02243162f;
+      float fy = 301.80520504f;
+      float cx = 324.73866457f;
+      float cy = 216.85437825f;
+      int width = 640;
+      int height = 480;
+    };
+
+    Intrinsics intrinsics;
 
   private:
     std::shared_ptr<State> state;
@@ -70,6 +72,19 @@ class DepthCameraInput {
 
     void createGlTexture();
     void captureLoop();
+
+    int frameCount = 0; 
+    std::thread landmarkThread;
+    std::atomic<bool> detectRunning;
+    std::mutex landmarkMutex;
+
+    std::vector<dlib::point> landmark2D;
+    std::vector<cv::Point3f> landmark3D;
+
+    std::vector<dlib::point> getLandmarks2D();
+    std::vector<cv::Point3f> getLandmarks3D();
+    void landmarkLoop();
+
 
 };
 } // namespace UsArMirror

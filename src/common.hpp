@@ -12,6 +12,8 @@ struct State {
     float viewportScaling = 1.0f;
     int viewportWidth = 640;
     int viewportHeight = 480;
+
+    
     /// Debug flags
     // struct Flags {
     //     bool showDebug = false;

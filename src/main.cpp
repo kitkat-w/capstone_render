@@ -572,6 +572,13 @@ glm::mat4 getProjectionFromIntrinsics(const cv::Mat& K, int width, int height, f
 
 
 int main(int argc, char **argv) {
+  #ifdef NDEBUG
+    std::cout << "Release mode\n";
+  #else
+    std::cout << "Debug mode\n";
+  #endif
+
+
     std::string filename = "models/Cube/Cube.gltf";
     if (argc > 1) filename = argv[1];
 
@@ -606,7 +613,7 @@ int main(int argc, char **argv) {
     state->viewportHeight = 480;
 
     auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
-    auto faceRecon = std::make_shared<UsArMirror::FaceReconstruction>("share/");
+    // auto faceRecon = std::make_shared<UsArMirror::FaceReconstruction>("share/");
 
     Shaders shader = Shaders();
     glUseProgram(shader.pid);
@@ -617,121 +624,61 @@ int main(int argc, char **argv) {
     glUniform1i(tex_u, 0);
 
     tinygltf::Model model;
-    // if (!loadModel(model, filename.c_str())) return -1;
-    // auto vaoAndEbos = bindModel(model);
+    if (!loadModel(model, filename.c_str())) return -1;
+    auto vaoAndEbos = bindModel(model);
     dbgModel(model);
 
     glm::mat4 model_mat(1.0f), model_rot(1.0f);
     glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
 
-    GLuint faceVao = 0, faceVbo = 0, faceTex = 0, faceEbo = 0;
-    glm::mat4 faceModelMatrix;
-    int faceVertexCount = 0;
-    std::pair<GLuint, std::map<int, GLuint>> faceVaoAndVbos;
-
-    cv::Mat K = (cv::Mat_<float>(3, 3) << 615.0f, 0.0f, 320.0f, 0.0f, 615.0f, 240.0f, 0.0f, 0.0f, 1.0f);
-    cv::Mat extrinsics = cv::Mat::eye(4, 4, CV_32F);
-
     while (!window.Close()) {
-      window.Resize();
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-      cv::Mat color;
-      rs2::frame depth;
-      if (depthCameraInput->getFrame(color)) {
-          rs2::frame raw_depth = depthCameraInput->getDepth();
-          depth = raw_depth.as<rs2::depth_frame>();
-          cv::cvtColor(color, color, cv::COLOR_BGR2RGB);
-  
-          glActiveTexture(GL_TEXTURE1); // assuming background uses texture unit 1
-          glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color.cols, color.rows, 0,
-                       GL_RGB, GL_UNSIGNED_BYTE, color.data);
-      }
-  
-      static bool fitted = false;
-      if (glfwGetKey(window.window, GLFW_KEY_F) == GLFW_PRESS && !fitted) {
-          fitted = true;
-          faceRecon->fitAndRender(
-              color, depth,
-              K,
-              extrinsics, faceVaoAndVbos,
-              faceVao, faceVbo, faceEbo, faceTex, faceModelMatrix,
-              color.cols, color.rows, faceVertexCount
-          );
-          std::cout << "Fitted and uploaded face model.\n";
-      }
-      if (glfwGetKey(window.window, GLFW_KEY_F) == GLFW_RELEASE) {
-          fitted = false;
-      }
-  
-      glDisable(GL_DEPTH_TEST);
-      background.render(backgroundTexture, 800, 600);
-      glEnable(GL_DEPTH_TEST);
-  
-      if (faceVao && faceVertexCount > 0) {
-          // std::cout << "[Render] Entered face render block\n";
-          glUseProgram(shader.pid);
-          glActiveTexture(GL_TEXTURE0);
-          cv::Mat image = cv::imread("texture_grid.png");
-          glBindTexture(GL_TEXTURE_2D, faceTex);
-          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.cols, image.rows, 0,
-                       GL_RGB, GL_UNSIGNED_BYTE, image.data);
-  
-          glm::mat4 view(1.0f);
-          for (int r = 0; r < 3; ++r)
-              for (int c = 0; c < 4; ++c)
-                  view[c][r] = extrinsics.at<float>(r, c);
-  
-          glm::mat4 proj = getProjectionFromIntrinsics(K, color.cols, color.rows);
-          // glm::mat4 mvp = proj * view * faceModelMatrix;
-          glm::mat4 mvp = glm::perspective(glm::radians(45.0f), 800/600.0f, 0.1f, 1000.0f);
-  
-          glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
-          glUniform3fv(sun_position_u, 1, &sun_position[0]);
-          glUniform3fv(sun_color_u, 1, &sun_color[0]);
-          // glUniform1i(glGetUniformLocation(shader.pid, "tex"), 0);  // Set sampler2D to texture unit 0
-
-          // glBindVertexArray(faceVao);
-          // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceEbo);
-
-          GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
-          glUniform1f(opacityLoc, 1.0f); // 0.0 = transparent, 1.0 = opaque
-
-          faceRecon->drawEosMesh(faceVaoAndVbos, faceVertexCount);
-          // glDrawElements(GL_TRIANGLES, faceVertexCount, GL_UNSIGNED_SHORT, 0);
-          GLenum err = glGetError();
-          if (err != GL_NO_ERROR) {
-              std::cerr << "GL ERROR: " << err << std::endl;
-          }
-          // faceRecon->drawEosMesh(faceVaoAndVbos, faceVertexCount);
-          glBindVertexArray(0);
+        window.Resize();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+        cv::Mat color;
+        rs2::frame depth;
+        if (depthCameraInput->getFrame(color)) {
+            rs2::frame raw_depth = depthCameraInput->getDepth();
+            depth = raw_depth.as<rs2::depth_frame>();
+            cv::cvtColor(color, color, cv::COLOR_BGR2RGB);
+    
+            glActiveTexture(GL_TEXTURE1); // assuming background uses texture unit 1
+            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, color.cols, color.rows, 0,
+                        GL_RGB, GL_UNSIGNED_BYTE, color.data);
         }
+    
 
-        // // Draw 3D model
-        // glUseProgram(shader.pid);
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, modelTexture);
+    
+        glDisable(GL_DEPTH_TEST);
+        background.render(backgroundTexture, 800, 600);
+        glEnable(GL_DEPTH_TEST);
+    
 
-        // model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
-        // glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
-        // model_mat = trans * model_rot;
+        // Draw 3D model
+        glUseProgram(shader.pid);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, modelTexture);
 
-        // glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
-        // glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800 / (float)600, 0.01f, 1000.0f);
-        // // glm::mat4 mvp = proj * view * model_mat;
+        model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
+        glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
+        model_mat = trans * model_rot;
 
-        // glm::mat4 mvp = glm::ortho(-100.f, 100.f, -100.f, 100.f, 0.1f, 1000.f) *
-        //         glm::lookAt(glm::vec3(0, 0, 300), glm::vec3(0), glm::vec3(0, 1, 0)) *
-        //         glm::mat4(1.0f);
+        glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), 800 / (float)600, 0.01f, 1000.0f);
+        // glm::mat4 mvp = proj * view * model_mat;
+
+        glm::mat4 mvp = glm::ortho(-100.f, 100.f, -100.f, 100.f, 0.1f, 1000.f) *
+                glm::lookAt(glm::vec3(0, 0, 300), glm::vec3(0), glm::vec3(0, 1, 0)) *
+                glm::mat4(1.0f);
 
 
-        // glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
-        // glUniform3fv(sun_position_u, 1, &sun_position[0]);
-        // glUniform3fv(sun_color_u, 1, &sun_color[0]);
+        glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
+        glUniform3fv(sun_position_u, 1, &sun_position[0]);
+        glUniform3fv(sun_color_u, 1, &sun_color[0]);
 
-        // GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
-        // glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
+        GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
+        glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
 
 
         // drawModel(vaoAndEbos, model);
