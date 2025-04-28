@@ -21,6 +21,9 @@
 #include <opencv2/objdetect.hpp>
 #include <opencv2/face.hpp>
 
+#include "AprilTags/TagDetector.h"
+#include "AprilTags/Tag25h9.h"
+
 namespace UsArMirror {
 
 // struct State {
@@ -71,17 +74,18 @@ public:
 
     Intrinsics intrinsics;
 
+    cv::Mat extrinsicsMatrix;
+
     std::vector<cv::Point3f> getLandmarks3D();
 
     cv::Mat getK() const;
     cv::Mat getDist() const;
 
-
-
 private:
     void createGlTexture();
     void captureLoop();
     void detectionLoop();
+    void updateExtrinsicsFromAprilTag();
 
     // State
     std::shared_ptr<State> state;
@@ -111,6 +115,11 @@ private:
 
     std::vector<cv::Point3f> landmark3D;
     std::mutex landmarkMutex;
+    std::mutex extrinsicsMutex;
+
+    AprilTags::TagDetector* tagDetector;
+
+    float tag_size_meters = 0.0736f;  // Set your actual tag size here
 };
 
 } // namespace UsArMirror

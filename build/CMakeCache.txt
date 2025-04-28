@@ -277,6 +277,15 @@ GLESv2_LIB:FILEPATH=/usr/lib/aarch64-linux-gnu/libGLESv2.so
 //The directory containing a CMake configuration file for Glog.
 Glog_DIR:PATH=/usr/lib/aarch64-linux-gnu/cmake/glog
 
+//Installation directory for executables
+INSTALL_BIN_DIR:PATH=bin
+
+//Installation directory for header files
+INSTALL_INCLUDE_DIR:PATH=include
+
+//Installation directory for libraries
+INSTALL_LIB_DIR:PATH=lib
+
 //Arguments to supply to pkg-config
 PKG_CONFIG_ARGN:STRING=
 
@@ -381,8 +390,26 @@ Z_VCPKG_CL:FILEPATH=Z_VCPKG_CL-NOTFOUND
 // triplet
 _VCPKG_INSTALLED_DIR:PATH=/home/capstone_a4/capstone_render/build/vcpkg_installed
 
+//Value Computed by CMake
+apriltags_BINARY_DIR:STATIC=/home/capstone_a4/capstone_render/build/external/apriltags-cpp
+
+//Value Computed by CMake
+apriltags_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+apriltags_SOURCE_DIR:STATIC=/home/capstone_a4/capstone_render/external/apriltags-cpp
+
 //The directory containing a CMake configuration file for boost_headers.
 boost_headers_DIR:PATH=/usr/lib/aarch64-linux-gnu/cmake/boost_headers-1.74.0
+
+//Value Computed by CMake
+examples_BINARY_DIR:STATIC=/home/capstone_a4/capstone_render/build/external/apriltags-cpp/example
+
+//Value Computed by CMake
+examples_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+examples_SOURCE_DIR:STATIC=/home/capstone_a4/capstone_render/external/apriltags-cpp/example
 
 //The directory containing a CMake configuration file for fmt.
 fmt_DIR:PATH=/home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/share/fmt
@@ -566,7 +593,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

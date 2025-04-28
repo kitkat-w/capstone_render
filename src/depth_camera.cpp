@@ -9,7 +9,29 @@
 #include <thread>
 #include <mutex>
 
+#include "AprilTags/TagDetector.h"
+#include "AprilTags/Tag25h9.h"
+
+
 namespace UsArMirror {
+
+inline double standardRad(double t) {
+    if (t >= 0.) {
+        t = fmod(t+M_PI, 2*M_PI) - M_PI;
+    } else {
+        t = fmod(t-M_PI, -2*M_PI) + M_PI;
+    }
+    return t;
+    }
+    
+    void wRo_to_euler(const Eigen::Matrix3d& wRo, double& yaw, double& pitch, double& roll) {
+        yaw = standardRad(atan2(wRo(1,0), wRo(0,0)));
+        double c = cos(yaw);
+        double s = sin(yaw);
+        pitch = standardRad(atan2(-wRo(2,0), wRo(0,0)*c + wRo(1,0)*s));
+        roll  = standardRad(atan2(wRo(0,2)*s - wRo(1,2)*c, -wRo(0,1)*s + wRo(1,1)*c));
+    }
+    
 
 DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
     : state(state), running(true), textureId(-1), depth_frame(rs2::frame()) {
@@ -33,6 +55,8 @@ DepthCameraInput::DepthCameraInput(const std::shared_ptr<State>& state, int idx)
         facemark = cv::face::FacemarkLBF::create();
         facemark->loadModel("lbfmodel.yaml");
         spdlog::info("Loaded OpenCV FacemarkLBF model");
+
+        tagDetector = new AprilTags::TagDetector(AprilTags::tagCodes25h9);
 
     } catch (const rs2::error& e) {
         throw std::runtime_error(std::string("RealSense error: ") + e.what());
@@ -150,7 +174,7 @@ void DepthCameraInput::detectionLoop() {
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
 }
 
@@ -159,6 +183,8 @@ bool DepthCameraInput::getFrame(cv::Mat& outputFrame) {
     std::lock_guard lock(frameMutex);
     if (!frame.empty()) {
         outputFrame = frame.clone();
+
+        updateExtrinsicsFromAprilTag();
 
         std::lock_guard faceLock(faceMutex);
         for (size_t i = 0; i < faceBoxes.size(); ++i) {
@@ -208,6 +234,80 @@ void DepthCameraInput::render() {
 std::vector<cv::Point3f> DepthCameraInput::getLandmarks3D() {
     std::lock_guard<std::mutex> lock(landmarkMutex);
     return landmark3D;
+}
+
+void DepthCameraInput::updateExtrinsicsFromAprilTag() {
+    cv::Mat colorFrame = getLastColorFrame();
+    if (colorFrame.empty()) {
+        spdlog::warn("No color frame available for AprilTag detection.");
+        return;
+    }
+
+    // 1. Create AprilTags detector
+    // static AprilTags::TagDetector tagDetector(AprilTags::tagCodes25h9); // or 36h11 depending on your tags
+
+    // 2. Convert to grayscale
+    cv::Mat gray;
+    cv::cvtColor(colorFrame, gray, cv::COLOR_BGR2GRAY);
+
+    // 3. Detect tags
+    double t0 = static_cast<double>(cv::getTickCount());
+    std::vector<AprilTags::TagDetection> detections = tagDetector->extractTags(gray);
+    double dt = (static_cast<double>(cv::getTickCount()) - t0) / cv::getTickFrequency();
+    spdlog::info("{} tags detected in {:.3f} seconds", detections.size(), dt);
+
+    if (detections.empty()) {
+        spdlog::warn("No AprilTags detected.");
+        return;
+    }
+
+    // 4. Only use the first detection for now
+    AprilTags::TagDetection& detection = detections[0];
+
+    // 5. Recover relative pose
+    Eigen::Vector3d translation;
+    Eigen::Matrix3d rotation;
+    detection.getRelativeTranslationRotation(
+        tag_size_meters,   // tag size in meters (adjust to your actual tag size)
+        intrinsics.fx, intrinsics.fy,
+        intrinsics.cx, intrinsics.cy,
+        translation, rotation);
+
+    // 6. Convert rotation matrix to OpenCV
+    Eigen::Matrix3d F;
+    F << 1, 0, 0,
+         0, -1, 0,
+         0, 0, 1;
+    Eigen::Matrix3d fixed_rot = F * rotation;  // fix AprilTag frame convention
+
+    cv::Mat R_cv(3, 3, CV_64F);
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            R_cv.at<double>(i, j) = fixed_rot(i, j);
+
+    cv::Mat rvec;
+    cv::Rodrigues(R_cv, rvec);
+
+    cv::Mat tvec = (cv::Mat_<double>(3,1) << translation(0), translation(1), translation(2));
+
+    // 7. Build a 4x4 transformation matrix
+    cv::Mat extrinsic = cv::Mat::eye(4, 4, CV_32F);
+    R_cv.convertTo(extrinsic(cv::Rect(0, 0, 3, 3)), CV_32F);
+    tvec.convertTo(extrinsic(cv::Rect(3, 0, 1, 3)), CV_32F);
+
+    {
+        std::lock_guard lock(extrinsicsMutex);
+        extrinsicsMatrix = extrinsic;
+    }
+
+    // 8. Log results
+    spdlog::info("AprilTag ID: {}", detection.id);
+    spdlog::info("Translation (x, y, z) = ({:.3f}, {:.3f}, {:.3f}) meters",
+                 translation(0), translation(1), translation(2));
+    double yaw, pitch, roll;
+    wRo_to_euler(fixed_rot, yaw, pitch, roll);
+    spdlog::info("Rotation (yaw, pitch, roll) = ({:.3f}, {:.3f}, {:.3f}) radians",
+                 yaw, pitch, roll);
 }
 
 

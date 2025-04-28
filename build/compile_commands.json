@@ -1,32 +1,102 @@
 [
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/background_shader.cpp.o -c /home/capstone_a4/capstone_render/src/background_shader.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/background_shader.cpp.o -c /home/capstone_a4/capstone_render/src/background_shader.cpp",
   "file": "/home/capstone_a4/capstone_render/src/background_shader.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o -c /home/capstone_a4/capstone_render/src/depth_camera.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/depth_camera.cpp.o -c /home/capstone_a4/capstone_render/src/depth_camera.cpp",
   "file": "/home/capstone_a4/capstone_render/src/depth_camera.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/main.cpp.o -c /home/capstone_a4/capstone_render/src/main.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/main.cpp.o -c /home/capstone_a4/capstone_render/src/main.cpp",
   "file": "/home/capstone_a4/capstone_render/src/main.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/second_cam.cpp.o -c /home/capstone_a4/capstone_render/src/second_cam.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/second_cam.cpp.o -c /home/capstone_a4/capstone_render/src/second_cam.cpp",
   "file": "/home/capstone_a4/capstone_render/src/second_cam.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/shaders.cpp.o -c /home/capstone_a4/capstone_render/src/shaders.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/shaders.cpp.o -c /home/capstone_a4/capstone_render/src/shaders.cpp",
   "file": "/home/capstone_a4/capstone_render/src/shaders.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
-  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/window.cpp.o -c /home/capstone_a4/capstone_render/src/window.cpp",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/window.cpp.o -c /home/capstone_a4/capstone_render/src/window.cpp",
   "file": "/home/capstone_a4/capstone_render/src/window.cpp"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/Edge.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/Edge.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/Edge.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/FloatImage.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/FloatImage.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/FloatImage.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/GLine2D.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/GLine2D.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/GLine2D.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/GLineSegment2D.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/GLineSegment2D.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/GLineSegment2D.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/Gaussian.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/Gaussian.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/Gaussian.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/GrayModel.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/GrayModel.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/GrayModel.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/Homography33.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/Homography33.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/Homography33.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/MathUtil.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/MathUtil.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/MathUtil.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/Quad.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/Quad.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/Quad.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/Segment.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/Segment.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/Segment.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/TagDetection.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagDetection.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagDetection.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/TagDetector.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagDetector.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagDetector.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/TagFamily.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagFamily.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/TagFamily.cc"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -I/usr/local/include/opencv4 -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/apriltags-cpp/AprilTags -I/home/capstone_a4/capstone_render/external/apriltags-cpp/. -I/opt/local/include -O3 -DNDEBUG -std=gnu++14 -o external/apriltags-cpp/CMakeFiles/apriltags.dir/src/UnionFindSimple.cc.o -c /home/capstone_a4/capstone_render/external/apriltags-cpp/src/UnionFindSimple.cc",
+  "file": "/home/capstone_a4/capstone_render/external/apriltags-cpp/src/UnionFindSimple.cc"
 }
 ]

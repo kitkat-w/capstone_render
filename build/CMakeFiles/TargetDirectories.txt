@@ -1,3 +1,6 @@
 /home/capstone_a4/capstone_render/build/CMakeFiles/UsARMirror.dir
 /home/capstone_a4/capstone_render/build/CMakeFiles/edit_cache.dir
 /home/capstone_a4/capstone_render/build/CMakeFiles/rebuild_cache.dir
+/home/capstone_a4/capstone_render/build/external/apriltags-cpp/CMakeFiles/apriltags.dir
+/home/capstone_a4/capstone_render/build/external/apriltags-cpp/CMakeFiles/edit_cache.dir
+/home/capstone_a4/capstone_render/build/external/apriltags-cpp/CMakeFiles/rebuild_cache.dir

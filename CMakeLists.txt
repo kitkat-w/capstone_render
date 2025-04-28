@@ -80,6 +80,8 @@ add_executable(UsARMirror
         ${HEADERS}
 )
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/external/apriltags-cpp)
+
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         imgui::imgui
@@ -98,6 +100,7 @@ target_link_libraries(${PROJECT_NAME}
         ${Boost_LIBRARIES}
         ${GLESv2_LIB}
         ${EGL_LIB}
+        apriltags
 )
 
 # include_directories(${PROJECT_SOURCE_DIR}/external/tinygltf)
@@ -108,6 +111,10 @@ target_link_libraries(${PROJECT_NAME}
 # # cereal (used by eos)
 # include_directories(${PROJECT_SOURCE_DIR}/external/cereal/include) # Change if cereal is separate
 
+# include_directories(${PROJECT_SOURCE_DIR}/external/apriltags-cpp/AprilTags) # Change if cereal is separate
+
+
+
 # Add includes
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
@@ -117,4 +124,5 @@ include_directories(
 #     ${PROJECT_SOURCE_DIR}/external/eos/include
 #     ${PROJECT_SOURCE_DIR}/external/cereal/include 
     ${PROJECT_SOURCE_DIR}/external/tiny_gltf
+    ${PROJECT_SOURCE_DIR}/external/apriltags-cpp
 )
