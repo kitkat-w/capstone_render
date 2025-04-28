@@ -163,6 +163,24 @@ void DepthCameraInput::detectionLoop() {
                 float depth_m = d * 0.001f;
                 float px = (x - intr.ppx) / intr.fx;
                 float py = (y - intr.ppy) / intr.fy;
+
+                cv::Point3f cameraPoint(px * depth_m, py * depth_m, depth_m);
+                auto extrinsic = getExtrinsics(); 
+
+                if (extrinsic.type() != CV_32F && extrinsic.type() != CV_64F) {
+                    extrinsic.convertTo(extrinsic, CV_32F);  // Safely convert to float
+                }
+
+                auto extrinsic_inv = extrinsic.inv();
+                // Transform into world coordinates
+                cv::Mat p_c_h = (cv::Mat_<float>(4,1) << cameraPoint.x, cameraPoint.y, cameraPoint.z, 1.0f);
+                cv::Mat p_w_h = extrinsic_inv * p_c_h;  // <- extrinsic_inv is your inverted extrinsicsMatrix
+                cv::Point3f worldPoint(
+                    p_w_h.at<float>(0,0),
+                    p_w_h.at<float>(1,0),
+                    p_w_h.at<float>(2,0)
+                );
+                std::cout << "Landmark 3D: " << px * depth_m << ", " << py * depth_m << ", " << depth_m << std::endl;
                 points3D.emplace_back(cv::Point3f(px * depth_m, py * depth_m, depth_m));
             }
 
@@ -275,9 +293,9 @@ void DepthCameraInput::updateExtrinsicsFromAprilTag() {
 
     // 6. Convert rotation matrix to OpenCV
     Eigen::Matrix3d F;
-    F << 1, 0, 0,
-         0, -1, 0,
-         0, 0, 1;
+    F << 0, 1, 0,
+        0, 0, -1,
+        1, 0, 0;
     Eigen::Matrix3d fixed_rot = F * rotation;  // fix AprilTag frame convention
 
     cv::Mat R_cv(3, 3, CV_64F);
@@ -287,8 +305,9 @@ void DepthCameraInput::updateExtrinsicsFromAprilTag() {
 
     cv::Mat rvec;
     cv::Rodrigues(R_cv, rvec);
-
-    cv::Mat tvec = (cv::Mat_<double>(3,1) << translation(0), translation(1), translation(2));
+    
+    Eigen::Vector3d fixed_trans = F * translation;
+    cv::Mat tvec = (cv::Mat_<double>(3,1) << fixed_trans(0), fixed_trans(1), fixed_trans(2));
 
     // 7. Build a 4x4 transformation matrix
     cv::Mat extrinsic = cv::Mat::eye(4, 4, CV_32F);
@@ -303,7 +322,7 @@ void DepthCameraInput::updateExtrinsicsFromAprilTag() {
     // 8. Log results
     spdlog::info("AprilTag ID: {}", detection.id);
     spdlog::info("Translation (x, y, z) = ({:.3f}, {:.3f}, {:.3f}) meters",
-                 translation(0), translation(1), translation(2));
+        fixed_trans(0), fixed_trans(1), fixed_trans(2));
     double yaw, pitch, roll;
     wRo_to_euler(fixed_rot, yaw, pitch, roll);
     spdlog::info("Rotation (yaw, pitch, roll) = ({:.3f}, {:.3f}, {:.3f}) radians",

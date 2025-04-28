@@ -74,18 +74,23 @@ public:
 
     Intrinsics intrinsics;
 
-    cv::Mat extrinsicsMatrix;
-
     std::vector<cv::Point3f> getLandmarks3D();
 
     cv::Mat getK() const;
     cv::Mat getDist() const;
+
+    cv::Mat getExtrinsics() const {
+        // std::lock_guard lock(extrinsicsMutex);
+        return extrinsicsMatrix.clone();
+    }
 
 private:
     void createGlTexture();
     void captureLoop();
     void detectionLoop();
     void updateExtrinsicsFromAprilTag();
+
+    cv::Mat extrinsicsMatrix = cv::Mat::eye(4, 4, CV_32F);
 
     // State
     std::shared_ptr<State> state;

@@ -570,6 +570,59 @@ glm::mat4 getProjectionFromIntrinsics(const cv::Mat& K, int width, int height, f
   return proj;
 }
 
+glm::mat4 getOpenGLProjectionFromOpenCV(const cv::Mat& K, float width, float height, float near, float far) {
+  float fx = K.at<float>(0, 0);
+  float fy = K.at<float>(1, 1);
+  float cx = K.at<float>(0, 2);
+  float cy = K.at<float>(1, 2);
+
+  glm::mat4 proj = glm::mat4(0.0f);
+
+  proj[0][0] = 2.0f * fx / width;
+  proj[1][1] = 2.0f * fy / height;
+  proj[2][0] = 2.0f * (cx / width) - 1.0f;
+  proj[2][1] = 2.0f * (cy / height) - 1.0f;
+  proj[2][2] = -(far + near) / (far - near);
+  proj[2][3] = -1.0f;
+  proj[3][2] = -(2.0f * far * near) / (far - near);
+
+  return proj;
+}
+
+glm::mat4 getViewMatrixFromExtrinsics(const cv::Mat& R_cv, const cv::Mat& tvec) {
+  glm::mat4 view = glm::mat4(1.0f);
+
+  // OpenCV rotation matrix to glm::mat3
+  glm::mat3 R(
+      R_cv.at<double>(0,0), R_cv.at<double>(0,1), R_cv.at<double>(0,2),
+      R_cv.at<double>(1,0), R_cv.at<double>(1,1), R_cv.at<double>(1,2),
+      R_cv.at<double>(2,0), R_cv.at<double>(2,1), R_cv.at<double>(2,2)
+  );
+
+  // OpenCV tvec
+  glm::vec3 t(
+      tvec.at<double>(0),
+      tvec.at<double>(1),
+      tvec.at<double>(2)
+  );
+
+  // Invert rotation and translation
+  glm::mat3 R_inv = glm::transpose(R); // Inverse of rotation matrix is transpose
+  glm::vec3 t_inv = -R_inv * t;
+
+  // Fill view matrix
+  view[0][0] = R_inv[0][0]; view[1][0] = R_inv[0][1]; view[2][0] = R_inv[0][2];
+  view[0][1] = R_inv[1][0]; view[1][1] = R_inv[1][1]; view[2][1] = R_inv[1][2];
+  view[0][2] = R_inv[2][0]; view[1][2] = R_inv[2][1]; view[2][2] = R_inv[2][2];
+
+  view[3][0] = t_inv.x;
+  view[3][1] = t_inv.y;
+  view[3][2] = t_inv.z;
+
+  return view;
+}
+
+
 int main(int argc, char **argv) {
   std::string filename = "models/Cube/Cube.gltf";
   if (argc > 1) filename = argv[1];
@@ -670,13 +723,15 @@ int main(int argc, char **argv) {
   
 
       // Draw 3D model
+      glViewport(0, 0, width/2, height);
+
       glUseProgram(shader.pid);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, modelTexture);
 
       model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
       glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
-      model_mat = trans * model_rot;
+      model_mat = trans * model_rot;S
 
       glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
       glm::mat4 proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.01f, 1000.0f);
@@ -690,6 +745,10 @@ int main(int argc, char **argv) {
       glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
 
 
+      drawModel(vaoAndEbos, model);
+
+
+      glViewport(width/2, 0, width/2, height);
       drawModel(vaoAndEbos, model);
       glfwSwapBuffers(window.window);
       glfwPollEvents();
