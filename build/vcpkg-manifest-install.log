@@ -1,7 +1,110 @@
+Fetching registry information from https://github.com/microsoft/vcpkg (HEAD)...
 Detecting compiler hash for triplet arm64-linux...
 Compiler found: /usr/bin/c++
-All requested packages are currently installed.
-Total install time: 539 us
+The following packages will be built and installed:
+  * brotli:arm64-linux@1.1.0#1 -- git+https://github.com/microsoft/vcpkg@4e5b5ae1ad26c80535c893cc0307121f0398549e
+  * bzip2[core,tool]:arm64-linux@1.0.8#6 -- git+https://github.com/microsoft/vcpkg@2d029da682847c5ebdc54e4dbea001331a02207e
+  * dirent:arm64-linux@1.24 -- git+https://github.com/microsoft/vcpkg@bcace8750d2b6080c63877eed432f8b862501012
+  * egl-registry:arm64-linux@2024-01-25 -- git+https://github.com/microsoft/vcpkg@d883db43133dd223c4ffdbef4193943f6784d43a
+  * expat:arm64-linux@2.6.4 -- git+https://github.com/microsoft/vcpkg@97dd7e516104f330e1bb5eafff10852211dbd2df
+    fmt:arm64-linux@11.0.2#1 -- git+https://github.com/microsoft/vcpkg@07a73a7565e5de9eb42e90c16c133bdfdfebbcda
+    fontconfig:arm64-linux@2.15.0#2 -- git+https://github.com/microsoft/vcpkg@4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f
+  * freetype[brotli,bzip2,core,png,zlib]:arm64-linux@2.13.3 -- git+https://github.com/microsoft/vcpkg@8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2
+    glad[core,loader]:arm64-linux@0.1.36 -- git+https://github.com/microsoft/vcpkg@fa93b14c1581057e1d14650f5f15c9b0757dd548
+    glfw3:arm64-linux@3.4#1 -- git+https://github.com/microsoft/vcpkg@d4bbd4f27c2ca619f57778985120cddcedadb1cc
+    glm:arm64-linux@1.0.1#3 -- git+https://github.com/microsoft/vcpkg@f8b09027afe97c717e95bd81d1d4f37c057d1c78
+  * gperf:arm64-linux@3.1#6 -- git+https://github.com/microsoft/vcpkg@590e19515bff5b0abc6d9f73ba20a19a71555a32
+    imgui[core,freetype,glfw-binding,opengl3-binding]:arm64-linux@1.91.8#2 -- git+https://github.com/microsoft/vcpkg@1b95d3d2136be80c988f89cbfe1506cea460a4fc
+  * libiconv:arm64-linux@1.17#5 -- git+https://github.com/microsoft/vcpkg@22817264465e37fbbde994c614aae7d07bc727c0
+  * libpng:arm64-linux@1.6.46 -- git+https://github.com/microsoft/vcpkg@0074ace75112e0a4ff3465de21e692c07d6e6b5f
+  * libuuid:arm64-linux@1.0.3#14 -- git+https://github.com/microsoft/vcpkg@09be6774f518692bc418aa03623cc9dbc19e6516
+  * opengl-registry:arm64-linux@2024-02-10#1 -- git+https://github.com/microsoft/vcpkg@22f7aa58ee78c9f0db904b6251e9265f2be26f9d
+  * pthread:arm64-linux@3.0.0#2 -- git+https://github.com/microsoft/vcpkg@e32a8cb12153277234e7c7e04322bdf90580659a
+  * pthreads:arm64-linux@3.0.0#14 -- git+https://github.com/microsoft/vcpkg@2e0a6df2800d3677b941dc6504f083965b7886d9
+    spdlog:arm64-linux@1.15.1 -- git+https://github.com/microsoft/vcpkg@7eecd9f58a522cf0ed8f081356617dbd7b4947de
+  * vcpkg-cmake:arm64-linux@2024-04-23 -- git+https://github.com/microsoft/vcpkg@e74aa1e8f93278a8e71372f1fa08c3df420eb840
+  * vcpkg-cmake-config:arm64-linux@2024-05-23 -- git+https://github.com/microsoft/vcpkg@97a63e4bc1a17422ffe4eff71da53b4b561a7841
+  * vcpkg-cmake-get-vars:arm64-linux@2024-09-22 -- git+https://github.com/microsoft/vcpkg@f23148add155147f3d95ae622d3b0031beb25acf
+  * vcpkg-tool-meson:arm64-linux@1.6.1 -- git+https://github.com/microsoft/vcpkg@dc948c67d7f1359319f801078422e996b0a89fd0
+  * zlib:arm64-linux@1.3.1 -- git+https://github.com/microsoft/vcpkg@3f05e04b9aededb96786a911a16193cdb711f0c9
+Additional packages (*) will be modified to complete this operation.
+Restored 25 package(s) from /home/capstone_a4/.cache/vcpkg/archives in 446 ms. Use --debug to see more details.
+Installing 1/25 vcpkg-cmake-config:arm64-linux@2024-05-23...
+Elapsed time to handle vcpkg-cmake-config:arm64-linux: 3.07 ms
+vcpkg-cmake-config:arm64-linux package ABI: 13a0b1152a2621d73968608f2171d2c60cb741ff46f430f0f8ec9cf98d71e73a
+Installing 2/25 vcpkg-cmake:arm64-linux@2024-04-23...
+Elapsed time to handle vcpkg-cmake:arm64-linux: 1.52 ms
+vcpkg-cmake:arm64-linux package ABI: f3eb3ad4fcd42463e9f70118c6adee96402d9e40fe673eca95d01764553e57ca
+Installing 3/25 fmt:arm64-linux@11.0.2#1...
+Elapsed time to handle fmt:arm64-linux: 3.51 ms
+fmt:arm64-linux package ABI: 6b7735ba39128f7622f8b5ff5e65a4841995b49b12a4cf888b1cf2bbb2904b09
+Installing 4/25 vcpkg-cmake-get-vars:arm64-linux@2024-09-22...
+Elapsed time to handle vcpkg-cmake-get-vars:arm64-linux: 1.49 ms
+vcpkg-cmake-get-vars:arm64-linux package ABI: e37fcf5ff04a173b20b1c919907282cea869469f4232182cc79c07d176419c78
+Installing 5/25 vcpkg-tool-meson:arm64-linux@1.6.1...
+Elapsed time to handle vcpkg-tool-meson:arm64-linux: 1.5 ms
+vcpkg-tool-meson:arm64-linux package ABI: 38ccae660e75f806ae1741ebac7d24b9437ab28c84f615f2b3f8895ab49e3525
+Installing 6/25 pthreads:arm64-linux@3.0.0#14...
+Elapsed time to handle pthreads:arm64-linux: 1.19 ms
+pthreads:arm64-linux package ABI: d3fc55aa3dd8a7a21ec3534d70951cf5fcb0cb07af230ed95c1cc4daeb9f04b0
+Installing 7/25 pthread:arm64-linux@3.0.0#2...
+Elapsed time to handle pthread:arm64-linux: 1.26 ms
+pthread:arm64-linux package ABI: 79d5f394e7ea09f0f48ec63560ff92871b244cbbcd677206693d62069b139fae
+Installing 8/25 libuuid:arm64-linux@1.0.3#14...
+Elapsed time to handle libuuid:arm64-linux: 2.46 ms
+libuuid:arm64-linux package ABI: 077f6ef0f15f7b72c259d714629cf9f080f400d43db60bf8001bd7897a4f4ec2
+Installing 9/25 libiconv:arm64-linux@1.17#5...
+Elapsed time to handle libiconv:arm64-linux: 1.5 ms
+libiconv:arm64-linux package ABI: 9142ae6a1bf0143d78bebcf751a46a30cf34f0290200dee79ae1b933169245da
+Installing 10/25 gperf:arm64-linux@3.1#6...
+Elapsed time to handle gperf:arm64-linux: 1.75 ms
+gperf:arm64-linux package ABI: 0d82a74b370a5dec03bd4ddd8fa6f481efd06edd10269b1377756b798c7875a2
+Installing 11/25 zlib:arm64-linux@1.3.1...
+Elapsed time to handle zlib:arm64-linux: 2.22 ms
+zlib:arm64-linux package ABI: d0acfea3c5b7f7e4db555ec67c160d17b291353e225a4f7f87815d51f0a6175b
+Installing 12/25 libpng:arm64-linux@1.6.46...
+Elapsed time to handle libpng:arm64-linux: 3.42 ms
+libpng:arm64-linux package ABI: 2bf9164bd7662a679ef3e1f7fd920ae21a9a3c1d4210ded294a6d64b7e426ec2
+Installing 13/25 bzip2[core,tool]:arm64-linux@1.0.8#6...
+Elapsed time to handle bzip2:arm64-linux: 2.86 ms
+bzip2:arm64-linux package ABI: 479995c740a9abd10005c0a1954347668506115c0e1a5f39d64f5ec3f946577b
+Installing 14/25 brotli:arm64-linux@1.1.0#1...
+Elapsed time to handle brotli:arm64-linux: 3.52 ms
+brotli:arm64-linux package ABI: 9adc39cd6ed315d1f248aa8f91733fd067b3df2eb74738f442a783d3655af95b
+Installing 15/25 freetype[brotli,bzip2,core,png,zlib]:arm64-linux@2.13.3...
+Elapsed time to handle freetype:arm64-linux: 6.27 ms
+freetype:arm64-linux package ABI: 75e6b463e8a4fe2e1ec83a231e4aaeb30ac9142949a3be314260802a5f584a3d
+Installing 16/25 expat:arm64-linux@2.6.4...
+Elapsed time to handle expat:arm64-linux: 3.33 ms
+expat:arm64-linux package ABI: a45f6d3a4940a4ba011e0f87509aadc99f2fcc4c27f57b05fb1c4403a13544d4
+Installing 17/25 dirent:arm64-linux@1.24...
+Elapsed time to handle dirent:arm64-linux: 1.76 ms
+dirent:arm64-linux package ABI: 480ef3fea4604751ad63521828dbb90b259fde48b2a83126b3287c902f8ff681
+Installing 18/25 fontconfig:arm64-linux@2.15.0#2...
+Elapsed time to handle fontconfig:arm64-linux: 6.92 ms
+fontconfig:arm64-linux package ABI: 60a8ebbfd5962f697beefa3cd8c6aa757dcaa9987c6cdab0228b0607864476c6
+Installing 19/25 egl-registry:arm64-linux@2024-01-25...
+Elapsed time to handle egl-registry:arm64-linux: 2.44 ms
+egl-registry:arm64-linux package ABI: 1005154f34567284da3cd52ceb75c76e7be465ea5918af9431f80d122e024317
+Installing 20/25 opengl-registry:arm64-linux@2024-02-10#1...
+Elapsed time to handle opengl-registry:arm64-linux: 4.94 ms
+opengl-registry:arm64-linux package ABI: 2d5bc244c8a086a0ea23610c1af89dfd40ceb03f497ce1e712b5c78bb416e176
+Installing 21/25 glad[core,loader]:arm64-linux@0.1.36...
+Elapsed time to handle glad:arm64-linux: 2.74 ms
+glad:arm64-linux package ABI: e07835aca55670ec2bee88a681997e172e779cd718fd68bf6a6448dc7682c219
+Installing 22/25 glfw3:arm64-linux@3.4#1...
+Elapsed time to handle glfw3:arm64-linux: 3.21 ms
+glfw3:arm64-linux package ABI: 40a423503458b38df812b3b9f9da8a784a8d06cb76d59b76aa62d77213e92ce5
+Installing 23/25 glm:arm64-linux@1.0.1#3...
+Elapsed time to handle glm:arm64-linux: 18.8 ms
+glm:arm64-linux package ABI: 0867ab082f729bd9f165a070142915477a7da6c912b37f77b1f1915b4218137b
+Installing 24/25 imgui[core,freetype,glfw-binding,opengl3-binding]:arm64-linux@1.91.8#2...
+Elapsed time to handle imgui:arm64-linux: 4.38 ms
+imgui:arm64-linux package ABI: f85e5ea93ed3d070473873cb10414e946b432ff4daa3a685e56d9b021837576f
+Installing 25/25 spdlog:arm64-linux@1.15.1...
+Elapsed time to handle spdlog:arm64-linux: 5.47 ms
+spdlog:arm64-linux package ABI: 7d4981c7fccd8fc368d9b4c539b86ced0a251d0679eccdca86d5b4f9d33fb773
+Total install time: 96.9 ms
 The package fmt provides CMake targets:
 
     find_package(fmt CONFIG REQUIRED)

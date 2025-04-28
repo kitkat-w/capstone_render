@@ -166,7 +166,7 @@
 #include "background_shader.h"
 #include "depth_camera.hpp"
 #include "common.hpp"
-#include "face_reconstruction.hpp"
+// #include "face_reconstruction.hpp"
 #include "second_cam.hpp"
 
 // #include <imgui.h>
@@ -573,128 +573,110 @@ glm::mat4 getProjectionFromIntrinsics(const cv::Mat& K, int width, int height, f
 
 
 int main(int argc, char **argv) {
-    std::string filename = "models/Cube/Cube.gltf";
-    if (argc > 1) filename = argv[1];
+  std::string filename = "models/Cube/Cube.gltf";
+  if (argc > 1) filename = argv[1];
 
-    if (!glfwInit()) return -1;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  auto w = 800, h = 600;
 
-    Window window(1280, 480, "GLTF Viewer with Video Background");
-    auto width = 1280;
-    auto height = 480;
-    glfwMakeContextCurrent(window.window);
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
+  if (!glfwInit()) return -1;
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  Window window(1920, 480, "GLTF Viewer with Video Background");
+  auto width = 1920;
+  auto height = 480;
+  glfwMakeContextCurrent(window.window);
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+      std::cerr << "Failed to initialize GLAD" << std::endl;
+      return -1;
+  }
 
-    BackgroundShader background;
-    GLuint backgroundTexture;
-    GLuint secondaryTexture;
-    glGenTextures(1, &secondaryTexture);
-    glGenTextures(1, &backgroundTexture);
-    glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // glDisable(GL_CULL_FACE);
+  BackgroundShader background;
+  GLuint backgroundTexture;
+  glGenTextures(1, &backgroundTexture);
+  glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    auto state = std::make_shared<UsArMirror::State>();
-    state->viewportWidth = 640;
-    state->viewportHeight = 480;
+  auto state = std::make_shared<UsArMirror::State>();
+  state->viewportWidth = 640;
+  state->viewportHeight = 480;
 
-    auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
-    auto secondaryCam = std::make_shared<UsArMirror::CameraInput>(state, 0);
-    // auto faceRecon = std::make_shared<UsArMirror::FaceReconstruction>("share/");
+  auto depthCameraInput = std::make_shared<UsArMirror::DepthCameraInput>(state, 0);
+  auto secondaryCam = std::make_shared<UsArMirror::CameraInput>(state, 0);
+  auto tertiaryCam = std::make_shared<UsArMirror::CameraInput>(state, 1); // <-- third camera here
 
-    Shaders shader;
-    glUseProgram(shader.pid);
-    GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
-    GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
-    GLuint sun_color_u = glGetUniformLocation(shader.pid, "sun_color");
-    GLuint tex_u = glGetUniformLocation(shader.pid, "tex");
-    glUniform1i(tex_u, 0);
+  Shaders shader;
+  glUseProgram(shader.pid);
+  GLuint MVP_u = glGetUniformLocation(shader.pid, "MVP");
+  GLuint sun_position_u = glGetUniformLocation(shader.pid, "sun_position");
+  GLuint sun_color_u = glGetUniformLocation(shader.pid, "sun_color");
+  GLuint tex_u = glGetUniformLocation(shader.pid, "tex");
+  glUniform1i(tex_u, 0);
 
-    tinygltf::Model model;
-    if (!loadModel(model, filename.c_str())) return -1;
-    auto vaoAndEbos = bindModel(model);
+  tinygltf::Model model;
+  if (!loadModel(model, filename.c_str())) return -1;
+  auto vaoAndEbos = bindModel(model);
 
-    glm::mat4 model_mat(1.0f), model_rot(1.0f);
-    glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
+  glm::mat4 model_mat(1.0f), model_rot(1.0f);
+  glm::vec3 model_pos(-3, 0, -3), sun_position(3.0f, 10.0f, -5.0f), sun_color(1.0f);
 
+  while (!window.Close()) {
+      window.Resize();
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+      cv::Mat color, secColor, tertColor, stitchedImage;
+      rs2::frame depth;
 
-    while (!window.Close()) {
-        window.Resize();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-        cv::Mat color, secColor, stitchedImage;
-        rs2::frame depth;
+      if (secondaryCam->getFrame(secColor) && tertiaryCam->getFrame(tertColor) && depthCameraInput->getFrame(color)) {
+          depth = depthCameraInput->getDepth();
 
-        if (secondaryCam->getFrame(secColor) && depthCameraInput->getFrame(color)) {
-            // Resize to same height (optional)
-            // if (secondaryColor.size() != depthColor.size()) {
-            //     cv::resize(depthColor, depthColor, secondaryColor.size());
-            // }
-            cv::imwrite("depth.png", color);
-            cv::imwrite("secondary.png", secColor);
+          std::vector<cv::Mat> images = {secColor, tertColor, color};
+          cv::hconcat(images, stitchedImage);
 
-            depth = depthCameraInput->getDepth();
+          cv::cvtColor(stitchedImage, stitchedImage, cv::COLOR_BGR2RGB);
 
-        
-            // Stitch side-by-side
-            cv::hconcat(secColor, color, stitchedImage);
-        
-            // Convert BGR to RGB
-            cv::cvtColor(stitchedImage, stitchedImage, cv::COLOR_BGR2RGB);
-        
-            // Upload as single OpenGL texture
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, backgroundTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stitchedImage.cols, stitchedImage.rows, 0,
-                        GL_RGB, GL_UNSIGNED_BYTE, stitchedImage.data);
-        
-            // Render full window
-            glDisable(GL_DEPTH_TEST);
-            background.render(backgroundTexture, width, height);
-            glEnable(GL_DEPTH_TEST);
-        }
-      
-    
+          glActiveTexture(GL_TEXTURE1);
+          glBindTexture(GL_TEXTURE_2D, backgroundTexture);
+          glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, stitchedImage.cols, stitchedImage.rows, 0,
+                       GL_RGB, GL_UNSIGNED_BYTE, stitchedImage.data);
 
-        // Draw 3D model
-        glUseProgram(shader.pid);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, modelTexture);
+          glDisable(GL_DEPTH_TEST);
+          background.render(backgroundTexture, width, height);
+          glEnable(GL_DEPTH_TEST);
+      }
 
-        model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
-        glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
-        model_mat = trans * model_rot;
+      // Draw 3D model
+      glUseProgram(shader.pid);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, modelTexture);
 
-        glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.01f, 1000.0f);
-        glm::mat4 mvp = proj * view * model_mat;
+      model_rot = glm::rotate(model_rot, glm::radians(0.8f), glm::vec3(0, 1, 0));
+      glm::mat4 trans = glm::translate(glm::mat4(1.0f), model_pos);
+      model_mat = trans * model_rot;
 
-        glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
-        glUniform3fv(sun_position_u, 1, &sun_position[0]);
-        glUniform3fv(sun_color_u, 1, &sun_color[0]);
+      glm::mat4 view = glm::lookAt(glm::vec3(2, 2, 20), model_pos, glm::vec3(0, 1, 0));
+      glm::mat4 proj = glm::perspective(glm::radians(45.0f), w / (float)h, 0.01f, 1000.0f);
+      glm::mat4 mvp = proj * view * model_mat;
 
-        GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
-        glUniform1f(opacityLoc, 0.5f); // 0.0 = transparent, 1.0 = opaque
+      glUniformMatrix4fv(MVP_u, 1, GL_FALSE, &mvp[0][0]);
+      glUniform3fv(sun_position_u, 1, &sun_position[0]);
+      glUniform3fv(sun_color_u, 1, &sun_color[0]);
 
+      GLuint opacityLoc = glGetUniformLocation(shader.pid, "opacity");
+      glUniform1f(opacityLoc, 0.5f); // Transparent model
 
-        drawModel(vaoAndEbos, model);
-        glfwSwapBuffers(window.window);
-        glfwPollEvents();
-    }
+      drawModel(vaoAndEbos, model);
+      glfwSwapBuffers(window.window);
+      glfwPollEvents();
+  }
 
-    glDeleteVertexArrays(1, &vaoAndEbos.first);
-    glfwTerminate();
-    return 0;
+  glDeleteVertexArrays(1, &vaoAndEbos.first);
+  glfwTerminate();
+  return 0;
 }

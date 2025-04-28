@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/freetype-arm64-linux-2.13.3-8fe1df1a-61eb-4bea-8c3d-58f588cb337a",
-  "name": "freetype:arm64-linux@2.13.3 6a86b8a36095cf18459b32d028072d66c4226295de0ca32716763fc181f986e3",
+  "documentNamespace": "https://spdx.org/spdxdocs/freetype-arm64-linux-2.13.3-f60b58df-03bb-490c-9bce-abfc34c1212c",
+  "name": "freetype:arm64-linux@2.13.3 75e6b463e8a4fe2e1ec83a231e4aaeb30ac9142949a3be314260802a5f584a3d",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2999-12-31-unknownhash"
+      "Tool: vcpkg-2025-04-16-f9b6c6917b23c1ccf16c1a9f015ebabf8f615045"
     ],
-    "created": "2025-04-02T07:49:51Z"
+    "created": "2025-04-28T07:45:14Z"
   },
   "relationships": [
     {
@@ -111,6 +111,11 @@
       "spdxElementId": "SPDXRef-file-8",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-8",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -129,7 +134,7 @@
     {
       "name": "freetype:arm64-linux",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "6a86b8a36095cf18459b32d028072d66c4226295de0ca32716763fc181f986e3",
+      "versionInfo": "75e6b463e8a4fe2e1ec83a231e4aaeb30ac9142949a3be314260802a5f584a3d",
       "downloadLocation": "NONE",
       "licenseConcluded": "FTL OR GPL-2.0-or-later",
       "licenseDeclared": "NOASSERTION",
@@ -153,31 +158,31 @@
   ],
   "files": [
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/vcpkg.json",
+      "fileName": "./bzip2.patch",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "ecd02245a50543938b6d608d38f2379a336cc3298d4e3edfb0599c36ab6b5773"
+          "checksumValue": "f5d451ce5819f75591d8cc4afe6f735c07bc54d90ed788219fb632915809d8a9"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/brotli-static.patch",
+      "fileName": "./portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "170a70c878924a780affe0b365efad68777cdef1cffbdd6954af6fbdba3e0862"
+          "checksumValue": "bb01ffcba667f059c2551d1ed0e6ef0a16e3c68457514038f830412086387d65"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/usage",
+      "fileName": "./usage",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -189,20 +194,8 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/0003-Fix-UWP.patch",
+      "fileName": "./fix-exports.patch",
       "SPDXID": "SPDXRef-file-3",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "e0e04364e1d674ce1f04a23be7d260a25a7c335c037ca0a5296bcd0a80c1054b"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/fix-exports.patch",
-      "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -213,8 +206,44 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/subpixel-rendering.patch",
+      "fileName": "./brotli-static.patch",
+      "SPDXID": "SPDXRef-file-4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "170a70c878924a780affe0b365efad68777cdef1cffbdd6954af6fbdba3e0862"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./vcpkg-cmake-wrapper.cmake",
       "SPDXID": "SPDXRef-file-5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2279d50899549ac61331b080fa765d43064d97c1ea32f33c1ba024f36ecc0d63"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./0003-Fix-UWP.patch",
+      "SPDXID": "SPDXRef-file-6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e0e04364e1d674ce1f04a23be7d260a25a7c335c037ca0a5296bcd0a80c1054b"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./subpixel-rendering.patch",
+      "SPDXID": "SPDXRef-file-7",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -225,36 +254,12 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/bzip2.patch",
-      "SPDXID": "SPDXRef-file-6",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "f5d451ce5819f75591d8cc4afe6f735c07bc54d90ed788219fb632915809d8a9"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/portfile.cmake",
-      "SPDXID": "SPDXRef-file-7",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "bb01ffcba667f059c2551d1ed0e6ef0a16e3c68457514038f830412086387d65"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2/vcpkg-cmake-wrapper.cmake",
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-8",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "2279d50899549ac61331b080fa765d43064d97c1ea32f33c1ba024f36ecc0d63"
+          "checksumValue": "ecd02245a50543938b6d608d38f2379a336cc3298d4e3edfb0599c36ab6b5773"
         }
       ],
       "licenseConcluded": "NOASSERTION",

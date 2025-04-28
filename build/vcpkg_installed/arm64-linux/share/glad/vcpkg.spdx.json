@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/glad-arm64-linux-0.1.36-eff53683-9dbb-4512-96a0-3a035a532bf2",
-  "name": "glad:arm64-linux@0.1.36 eb1af155518e0597f795d7971f9365f1709ea7207129573add133dfca8beb0d4",
+  "documentNamespace": "https://spdx.org/spdxdocs/glad-arm64-linux-0.1.36-7a640635-7bd3-4dfe-a49d-96aa78f7bcce",
+  "name": "glad:arm64-linux@0.1.36 e07835aca55670ec2bee88a681997e172e779cd718fd68bf6a6448dc7682c219",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2999-12-31-unknownhash"
+      "Tool: vcpkg-2025-04-16-f9b6c6917b23c1ccf16c1a9f015ebabf8f615045"
     ],
-    "created": "2025-04-02T07:50:37Z"
+    "created": "2025-04-28T07:46:26Z"
   },
   "relationships": [
     {
@@ -61,6 +61,11 @@
       "spdxElementId": "SPDXRef-file-3",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-3",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -79,7 +84,7 @@
     {
       "name": "glad:arm64-linux",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "eb1af155518e0597f795d7971f9365f1709ea7207129573add133dfca8beb0d4",
+      "versionInfo": "e07835aca55670ec2bee88a681997e172e779cd718fd68bf6a6448dc7682c219",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -103,20 +108,8 @@
   ],
   "files": [
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/fa93b14c1581057e1d14650f5f15c9b0757dd548/vcpkg.json",
+      "fileName": "./find_python.patch",
       "SPDXID": "SPDXRef-file-0",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "3ed4a4bbda7aaca8656fd547d1b743a54f72756a38e550821894ec5e3836d2c4"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/fa93b14c1581057e1d14650f5f15c9b0757dd548/find_python.patch",
-      "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -127,7 +120,19 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/fa93b14c1581057e1d14650f5f15c9b0757dd548/encoding.patch",
+      "fileName": "./portfile.cmake",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "876bcb9362260ef58376320a26ad1f90964f9c1573d00097c5af13d4e77267c5"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./encoding.patch",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -139,12 +144,12 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/fa93b14c1581057e1d14650f5f15c9b0757dd548/portfile.cmake",
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "876bcb9362260ef58376320a26ad1f90964f9c1573d00097c5af13d4e77267c5"
+          "checksumValue": "3ed4a4bbda7aaca8656fd547d1b743a54f72756a38e550821894ec5e3836d2c4"
         }
       ],
       "licenseConcluded": "NOASSERTION",

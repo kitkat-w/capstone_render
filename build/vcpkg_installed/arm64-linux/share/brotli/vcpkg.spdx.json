@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/brotli-arm64-linux-1.1.0#1-9cf6ad5e-684a-42a2-bae7-8284024f959a",
-  "name": "brotli:arm64-linux@1.1.0#1 1f24884d77416b9a431e63e378edeae8022eb961fbfcbdd836b209276accfaa4",
+  "documentNamespace": "https://spdx.org/spdxdocs/brotli-arm64-linux-1.1.0#1-616cd9d1-4ffd-4299-a66e-f579ece6425d",
+  "name": "brotli:arm64-linux@1.1.0#1 9adc39cd6ed315d1f248aa8f91733fd067b3df2eb74738f442a783d3655af95b",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2999-12-31-unknownhash"
+      "Tool: vcpkg-2025-04-16-f9b6c6917b23c1ccf16c1a9f015ebabf8f615045"
     ],
-    "created": "2025-04-02T07:49:36Z"
+    "created": "2025-04-28T07:44:55Z"
   },
   "relationships": [
     {
@@ -91,6 +91,11 @@
       "spdxElementId": "SPDXRef-file-6",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-6",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -109,7 +114,7 @@
     {
       "name": "brotli:arm64-linux",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "1f24884d77416b9a431e63e378edeae8022eb961fbfcbdd836b209276accfaa4",
+      "versionInfo": "9adc39cd6ed315d1f248aa8f91733fd067b3df2eb74738f442a783d3655af95b",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -133,44 +138,20 @@
   ],
   "files": [
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/install.patch",
+      "fileName": "./portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "2945ebec5e350e275e1c0076a2b5bd4bd7bae4a9c6f1cef2a19988b739f4b75e"
+          "checksumValue": "f95cbfbd877b11da6e6dd4411c7d9744a8c7ea99cc77e9c967c4d9418a265310"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/fix-arm-uwp.patch",
+      "fileName": "./usage",
       "SPDXID": "SPDXRef-file-1",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "c9038ac61297ac59aa34bf0c93e3f2cea9d5f053e65ce5e4ad0207db47594720"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/vcpkg.json",
-      "SPDXID": "SPDXRef-file-2",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "98b60e394a4b54e250ddf315d319ff17bae4057c7ab7bf14790e57e437731417"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/usage",
-      "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -181,20 +162,32 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/emscripten.patch",
-      "SPDXID": "SPDXRef-file-4",
+      "fileName": "./install.patch",
+      "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "416ffaeb778323dd210a34b93d02efc2820b794c98c28f0ac5f5d82799cb50fd"
+          "checksumValue": "2945ebec5e350e275e1c0076a2b5bd4bd7bae4a9c6f1cef2a19988b739f4b75e"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/pkgconfig.patch",
-      "SPDXID": "SPDXRef-file-5",
+      "fileName": "./fix-arm-uwp.patch",
+      "SPDXID": "SPDXRef-file-3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "c9038ac61297ac59aa34bf0c93e3f2cea9d5f053e65ce5e4ad0207db47594720"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./pkgconfig.patch",
+      "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -205,12 +198,24 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e5b5ae1ad26c80535c893cc0307121f0398549e/portfile.cmake",
+      "fileName": "./emscripten.patch",
+      "SPDXID": "SPDXRef-file-5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "416ffaeb778323dd210a34b93d02efc2820b794c98c28f0ac5f5d82799cb50fd"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-6",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "f95cbfbd877b11da6e6dd4411c7d9744a8c7ea99cc77e9c967c4d9418a265310"
+          "checksumValue": "98b60e394a4b54e250ddf315d319ff17bae4057c7ab7bf14790e57e437731417"
         }
       ],
       "licenseConcluded": "NOASSERTION",

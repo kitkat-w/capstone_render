@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/fontconfig-arm64-linux-2.15.0#2-76a51a1b-e706-4fbd-9a11-9f78b7cd5c82",
-  "name": "fontconfig:arm64-linux@2.15.0#2 3aae530d90539666e3195daad95c083770697c585fd4f1d8f07e18633f688fa8",
+  "documentNamespace": "https://spdx.org/spdxdocs/fontconfig-arm64-linux-2.15.0#2-da20d5ca-8a83-4cba-a709-a07e91cfe916",
+  "name": "fontconfig:arm64-linux@2.15.0#2 60a8ebbfd5962f697beefa3cd8c6aa757dcaa9987c6cdab0228b0607864476c6",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2999-12-31-unknownhash"
+      "Tool: vcpkg-2025-04-16-f9b6c6917b23c1ccf16c1a9f015ebabf8f615045"
     ],
-    "created": "2025-04-02T07:50:25Z"
+    "created": "2025-04-28T07:45:58Z"
   },
   "relationships": [
     {
@@ -101,6 +101,11 @@
       "spdxElementId": "SPDXRef-file-7",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-7",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -119,7 +124,7 @@
     {
       "name": "fontconfig:arm64-linux",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "3aae530d90539666e3195daad95c083770697c585fd4f1d8f07e18633f688fa8",
+      "versionInfo": "60a8ebbfd5962f697beefa3cd8c6aa757dcaa9987c6cdab0228b0607864476c6",
       "downloadLocation": "NONE",
       "licenseConcluded": "MIT",
       "licenseDeclared": "NOASSERTION",
@@ -143,31 +148,31 @@
   ],
   "files": [
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/no-etc-symlinks.patch",
+      "fileName": "./portfile.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "6d32aba29d94a411c02ceae569980c836235c8ac87a332d2747356247f40afe8"
+          "checksumValue": "8ab307a14d60a7c9b3657da1f133b2f67c00a145ca1d6b3876c95692dd851078"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/vcpkg.json",
+      "fileName": "./usage",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "a1deb74b80a461365bdb614e38af4028f8818c688b510f93c37c49862163290c"
+          "checksumValue": "cabcdc433b856c1b539138b8e453568f165cadd4d4bd4064e849abc893f2af39"
         }
       ],
       "licenseConcluded": "NOASSERTION",
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/emscripten.diff",
+      "fileName": "./emscripten.diff",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -179,44 +184,8 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/usage",
+      "fileName": "./libgetopt.patch",
       "SPDXID": "SPDXRef-file-3",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "cabcdc433b856c1b539138b8e453568f165cadd4d4bd4064e849abc893f2af39"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/fix-wasm-shared-memory-atomics.patch",
-      "SPDXID": "SPDXRef-file-4",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "fe694482e941c0393f0d41061f164953df8a47039503ae845dc00f1c28dfcd0e"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/vcpkg-cmake-wrapper.cmake.in",
-      "SPDXID": "SPDXRef-file-5",
-      "checksums": [
-        {
-          "algorithm": "SHA256",
-          "checksumValue": "821be68f6612464c829e3ab67b9071c8076dad1764e42a4fdbf38831e137cfea"
-        }
-      ],
-      "licenseConcluded": "NOASSERTION",
-      "copyrightText": "NOASSERTION"
-    },
-    {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/libgetopt.patch",
-      "SPDXID": "SPDXRef-file-6",
       "checksums": [
         {
           "algorithm": "SHA256",
@@ -227,12 +196,48 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": ".//home/a4/.cache/vcpkg/registries/git-trees/4e1bd69ece93d01f14f3f78da93cfeca0f7e8b5f/portfile.cmake",
+      "fileName": "./no-etc-symlinks.patch",
+      "SPDXID": "SPDXRef-file-4",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "6d32aba29d94a411c02ceae569980c836235c8ac87a332d2747356247f40afe8"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./fix-wasm-shared-memory-atomics.patch",
+      "SPDXID": "SPDXRef-file-5",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "fe694482e941c0393f0d41061f164953df8a47039503ae845dc00f1c28dfcd0e"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./vcpkg-cmake-wrapper.cmake.in",
+      "SPDXID": "SPDXRef-file-6",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "821be68f6612464c829e3ab67b9071c8076dad1764e42a4fdbf38831e137cfea"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-7",
       "checksums": [
         {
           "algorithm": "SHA256",
-          "checksumValue": "8ab307a14d60a7c9b3657da1f133b2f67c00a145ca1d6b3876c95692dd851078"
+          "checksumValue": "a1deb74b80a461365bdb614e38af4028f8818c688b510f93c37c49862163290c"
         }
       ],
       "licenseConcluded": "NOASSERTION",

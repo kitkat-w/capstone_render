@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(OpenCV_DIR "/usr/local/lib/cmake/opencv4")
 find_package(OpenCV REQUIRED)
 find_package(realsense2 REQUIRED)
-find_package(dlib REQUIRED)
+# find_package(dlib REQUIRED)
 find_package(Boost REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(glfw3 REQUIRED)
@@ -32,16 +32,16 @@ find_package(spdlog CONFIG REQUIRED)
 # find_package(OpenPose REQUIRED)
 
 include_directories(
-        ${OpenPose_INCLUDE_DIRS}
+        # ${OpenPose_INCLUDE_DIRS}
         ${GFLAGS_INCLUDE_DIR}
         ${GLOG_INCLUDE_DIR}
         ${OpenCV_INCLUDE_DIRS}
 )
 
-set(Boost_NO_WARN_NEW_VERSIONS ON) # Supress "New Boost version may have incorrect dependencies or import targets" warning
-find_package(Boost 1.71.0 REQUIRED COMPONENTS filesystem program_options)
+# set(Boost_NO_WARN_NEW_VERSIONS ON) # Supress "New Boost version may have incorrect dependencies or import targets" warning
+# find_package(Boost 1.71.0 REQUIRED COMPONENTS filesystem program_options)
 
-add_subdirectory(external/eos)
+# add_subdirectory(external/eos)
 
 
 # Locate GLES and EGL if needed (for rendering on embedded systems)
@@ -60,7 +60,7 @@ file(GLOB SOURCES
         "src/window.cpp"
         "src/shaders.cpp"
         "src/background_shader.cpp"
-        "src/face_reconstruction.cpp"
+        # "src/face_reconstruction.cpp"
         # "src/renderer.cpp"
 )
 
@@ -71,7 +71,7 @@ file(GLOB HEADERS
         "src/shaders.h"
         "src/background_shader.h"
         "src/common.hpp"
-        "src/face_reconstruction.hpp"
+        # "src/face_reconstruction.hpp"
         # "src/renderer.hpp"
 )
 
@@ -88,13 +88,13 @@ target_link_libraries(${PROJECT_NAME}
         glad::glad
         glfw
         spdlog::spdlog
-        ${OpenPose_LIBS}
+        # ${OpenPose_LIBS}
         ${GFLAGS_LIBRARY}
         ${GLOG_LIBRARY}
         ${OpenCV_LIBS}
         realsense2
-        dlib::dlib
-        eos
+        # dlib::dlib
+        # eos
         ${Boost_LIBRARIES}
         ${GLESv2_LIB}
         ${EGL_LIB}
@@ -114,30 +114,7 @@ include_directories(
     ${realsense2_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
-    ${PROJECT_SOURCE_DIR}/external/eos/include
-    ${PROJECT_SOURCE_DIR}/external/cereal/include 
+#     ${PROJECT_SOURCE_DIR}/external/eos/include
+#     ${PROJECT_SOURCE_DIR}/external/cereal/include 
     ${PROJECT_SOURCE_DIR}/external/tiny_gltf
 )
-
-# Source files
-set(SOURCES
-    realsense_to_3d.cpp
-    additive_blend.cpp
-)
-
-# Executable
-add_executable(facelandmark realsense_to_3d.cpp)
-
-
-# Link libraries
-target_link_libraries(facelandmark
-    ${OpenCV_LIBS}
-    realsense2
-    dlib::dlib
-    ${Boost_LIBRARIES}
-    ${GLESv2_LIB}
-    ${EGL_LIB}
-    eos
-)
-
-

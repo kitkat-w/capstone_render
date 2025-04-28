@@ -2,14 +2,14 @@ Package: vcpkg-cmake-config
 Version: 2024-05-23
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 4f7b26ac412932b7b452498fe73e1a4ca501cb313d2fccf920b9f4473d585c51
+Abi: 13a0b1152a2621d73968608f2171d2c60cb741ff46f430f0f8ec9cf98d71e73a
 Status: install ok installed
 
 Package: vcpkg-cmake
 Version: 2024-04-23
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: f6aa27ac19d46f735ced8b28c1adb8f3e3370c3e3efc78a2c584fadcb421a349
+Abi: f3eb3ad4fcd42463e9f70118c6adee96402d9e40fe673eca95d01764553e57ca
 Status: install ok installed
 
 Package: fmt
@@ -18,7 +18,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: d3df70518effbb93f89a473e664bb5b08a20e889aad7b4eb2ee7d76af46b0f75
+Abi: 6b7735ba39128f7622f8b5ff5e65a4841995b49b12a4cf888b1cf2bbb2904b09
 Description: {fmt} is an open-source formatting library providing a fast and safe alternative to C stdio and C++ iostreams.
 Status: install ok installed
 
@@ -27,7 +27,7 @@ Version: 2024-09-22
 Depends: vcpkg-cmake
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: bba12fb01d5976d553c2a97ed48c9ee7137682f3cf5bb26362664f5cc9115f0b
+Abi: e37fcf5ff04a173b20b1c919907282cea869469f4232182cc79c07d176419c78
 Status: install ok installed
 
 Package: vcpkg-tool-meson
@@ -35,7 +35,7 @@ Version: 1.6.1
 Depends: vcpkg-cmake-get-vars
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: edb76c63344c6a560bd9f0e0c154511bc8bbcdedf72edab5a8102c30f1bfea31
+Abi: 38ccae660e75f806ae1741ebac7d24b9437ab28c84f615f2b3f8895ab49e3525
 Description: Meson build system
 Status: install ok installed
 
@@ -45,7 +45,7 @@ Port-Version: 14
 Depends: vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: faab9fb829b119e65b4b2ee895d412c7184746694bf535ae831924f29e454552
+Abi: d3fc55aa3dd8a7a21ec3534d70951cf5fcb0cb07af230ed95c1cc4daeb9f04b0
 Description: Meta-package that provides PThreads4W on Windows, or assumes presence of system pthreads on POSIX systems.
 Status: install ok installed
 
@@ -55,7 +55,7 @@ Port-Version: 2
 Depends: pthreads
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 4b8142f49105844b55edb67d82971df7860136fb9f41d7f1368852472614f54b
+Abi: 79d5f394e7ea09f0f48ec63560ff92871b244cbbcd677206693d62069b139fae
 Description: empty package, linking to other port
 Status: install ok installed
 
@@ -65,7 +65,7 @@ Port-Version: 14
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: c8fcf77b9df906bb38c8b88b2b65a6ee8169904be3e5eeb188c410f94b926120
+Abi: 077f6ef0f15f7b72c259d714629cf9f080f400d43db60bf8001bd7897a4f4ec2
 Description: Universally unique id library
 Status: install ok installed
 
@@ -74,7 +74,7 @@ Version: 1.17
 Port-Version: 5
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: d9ab393e332e12283086138d2297256e9328ce92a867fb27e66925820f1a0551
+Abi: 9142ae6a1bf0143d78bebcf751a46a30cf34f0290200dee79ae1b933169245da
 Description: GNU Unicode text conversion
 Status: install ok installed
 
@@ -84,7 +84,7 @@ Port-Version: 6
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 4e60b7405d5f32e983ce9b591d07d98793e0488432b5e98307caedfae94858c1
+Abi: 0d82a74b370a5dec03bd4ddd8fa6f481efd06edd10269b1377756b798c7875a2
 Description: GNU perfect hash function generator
 Status: install ok installed
 
@@ -93,7 +93,7 @@ Version: 1.3.1
 Depends: vcpkg-cmake
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: cd93ef944a6744e8a66c78a0dcddcea93011bb589e6d2529690df539028c0b34
+Abi: d0acfea3c5b7f7e4db555ec67c160d17b291353e225a4f7f87815d51f0a6175b
 Description: A compression library
 Status: install ok installed
 
@@ -102,7 +102,7 @@ Version: 1.6.46
 Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: ddcedbc9ae55a9967c139d01ea1b14bf10e685131d97e8ad951ce8c0d78fecd8
+Abi: 2bf9164bd7662a679ef3e1f7fd920ae21a9a3c1d4210ded294a6d64b7e426ec2
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
 Status: install ok installed
 
@@ -112,7 +112,7 @@ Port-Version: 6
 Depends: vcpkg-cmake
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 43e621290826ca7fcad07340cf000ef835a830c408a8b95772380b038f811156
+Abi: 479995c740a9abd10005c0a1954347668506115c0e1a5f39d64f5ec3f946577b
 Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
 Default-Features: tool
 Status: install ok installed
@@ -130,7 +130,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 1f24884d77416b9a431e63e378edeae8022eb961fbfcbdd836b209276accfaa4
+Abi: 9adc39cd6ed315d1f248aa8f91733fd067b3df2eb74738f442a783d3655af95b
 Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
 Status: install ok installed
 
@@ -139,7 +139,7 @@ Version: 2.13.3
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 6a86b8a36095cf18459b32d028072d66c4226295de0ca32716763fc181f986e3
+Abi: 75e6b463e8a4fe2e1ec83a231e4aaeb30ac9142949a3be314260802a5f584a3d
 Description: A library to render fonts.
 Default-Features: brotli, bzip2, png, zlib
 Status: install ok installed
@@ -181,7 +181,7 @@ Version: 2.6.4
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: c3853417540a038ee0825055d9a7a2fd5b124a8cb6ee50aa4d86d5baebc98655
+Abi: a45f6d3a4940a4ba011e0f87509aadc99f2fcc4c27f57b05fb1c4403a13544d4
 Description: XML parser library written in C
 Status: install ok installed
 
@@ -189,7 +189,7 @@ Package: dirent
 Version: 1.24
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 7be42e995e638692608469908345fb35cc596301b8379cd1ff2d2e445fa8e8a2
+Abi: 480ef3fea4604751ad63521828dbb90b259fde48b2a83126b3287c902f8ff681
 Description: Dirent is a C/C++ programming interface that allows programmers to retrieve information about files and directories under Linux/UNIX. This project provides Linux compatible Dirent interface for Microsoft Windows.
 Status: install ok installed
 
@@ -199,7 +199,7 @@ Port-Version: 2
 Depends: dirent, expat, freetype, gperf, libiconv, libuuid, pthread, vcpkg-tool-meson
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 3aae530d90539666e3195daad95c083770697c585fd4f1d8f07e18633f688fa8
+Abi: 60a8ebbfd5962f697beefa3cd8c6aa757dcaa9987c6cdab0228b0607864476c6
 Description: Library for configuring and customizing font access.
 Status: install ok installed
 
@@ -207,7 +207,7 @@ Package: egl-registry
 Version: 2024-01-25
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 75922b43654772615117b7c321193dc1cef3b6f1c7dac65d9ea68350171132c1
+Abi: 1005154f34567284da3cd52ceb75c76e7be465ea5918af9431f80d122e024317
 Description: EGL API and Extension Registry
 Status: install ok installed
 
@@ -217,7 +217,7 @@ Port-Version: 1
 Depends: egl-registry
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 46fdf595b36c6c47737cceb435f84548a4a8be30ddd41c86e1a757db3deae9fe
+Abi: 2d5bc244c8a086a0ea23610c1af89dfd40ceb03f497ce1e712b5c78bb416e176
 Description: OpenGL, OpenGL ES, and OpenGL ES-SC API and Extension Registry
 Status: install ok installed
 
@@ -226,7 +226,7 @@ Version: 0.1.36
 Depends: egl-registry, opengl-registry, vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: eb1af155518e0597f795d7971f9365f1709ea7207129573add133dfca8beb0d4
+Abi: e07835aca55670ec2bee88a681997e172e779cd718fd68bf6a6448dc7682c219
 Description: Multi-Language Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator based on the official specs.
 Default-Features: loader
 Status: install ok installed
@@ -244,7 +244,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: f859364fa4a3a6009d9b9e2b1462d0522d62011f511f61f120338372aeda17b9
+Abi: 40a423503458b38df812b3b9f9da8a784a8d06cb76d59b76aa62d77213e92ce5
 Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
 Status: install ok installed
 
@@ -254,7 +254,7 @@ Port-Version: 3
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 84a6d72e20b77ad4c47cd38dd94b09e39ee69d883328de163aff6917aa0cae3f
+Abi: 0867ab082f729bd9f165a070142915477a7da6c912b37f77b1f1915b4218137b
 Description: OpenGL Mathematics (GLM)
 Status: install ok installed
 
@@ -264,7 +264,7 @@ Port-Version: 2
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 8f51479bc8ef8eddc5269312dd1f2ce738f168c43b7c11e9535cbd9232a281c9
+Abi: f85e5ea93ed3d070473873cb10414e946b432ff4daa3a685e56d9b021837576f
 Description: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
 Status: install ok installed
 
@@ -296,7 +296,7 @@ Version: 1.15.1
 Depends: fmt, vcpkg-cmake, vcpkg-cmake-config
 Architecture: arm64-linux
 Multi-Arch: same
-Abi: 6021112795e6a6126f4b641e0aa6476a8c384e002523868e8014f032881348ca
+Abi: 7d4981c7fccd8fc368d9b4c539b86ced0a251d0679eccdca86d5b4f9d33fb773
 Description: Very fast, header-only/compiled, C++ logging library.
 Status: install ok installed
 
