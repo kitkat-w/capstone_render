@@ -16,6 +16,11 @@
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/model_renderer.cpp.o -c /home/capstone_a4/capstone_render/src/model_renderer.cpp",
+  "file": "/home/capstone_a4/capstone_render/src/model_renderer.cpp"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
   "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/second_cam.cpp.o -c /home/capstone_a4/capstone_render/src/second_cam.cpp",
   "file": "/home/capstone_a4/capstone_render/src/second_cam.cpp"
 },
@@ -23,6 +28,11 @@
   "directory": "/home/capstone_a4/capstone_render/build",
   "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/shaders.cpp.o -c /home/capstone_a4/capstone_render/src/shaders.cpp",
   "file": "/home/capstone_a4/capstone_render/src/shaders.cpp"
+},
+{
+  "directory": "/home/capstone_a4/capstone_render/build",
+  "command": "/usr/bin/c++ -DIMGUI_ENABLE_FREETYPE -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -I/usr/include/eigen3 -I/home/capstone_a4/capstone_render/external/tiny_gltf -I/home/capstone_a4/capstone_render/external/apriltags-cpp -isystem /usr/local/include/opencv4 -isystem /home/capstone_a4/capstone_render/build/vcpkg_installed/arm64-linux/include -pthread -DXML_STATIC -std=gnu++17 -o CMakeFiles/UsARMirror.dir/src/tiny_gltf_loader.cpp.o -c /home/capstone_a4/capstone_render/src/tiny_gltf_loader.cpp",
+  "file": "/home/capstone_a4/capstone_render/src/tiny_gltf_loader.cpp"
 },
 {
   "directory": "/home/capstone_a4/capstone_render/build",

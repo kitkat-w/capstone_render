@@ -62,6 +62,8 @@ file(GLOB SOURCES
         "src/background_shader.cpp"
         # "src/face_reconstruction.cpp"
         # "src/renderer.cpp"
+        "src/model_renderer.cpp"
+        "src/tiny_gltf_loader.cpp"
 )
 
 file(GLOB HEADERS
@@ -73,6 +75,7 @@ file(GLOB HEADERS
         "src/common.hpp"
         # "src/face_reconstruction.hpp"
         # "src/renderer.hpp"
+        "src/model_renderer.hpp"
 )
 
 add_executable(UsARMirror

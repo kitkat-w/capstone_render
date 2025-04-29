@@ -54,7 +54,17 @@ CameraInput::CameraInput(const std::shared_ptr<State>& state, int idx)
     auto framerate = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
     spdlog::info("Webcam {}: width: {}, height: {} framerate: {}", idx, width, height, framerate);
     if (!cap.isOpened()) {
-        throw std::runtime_error("Could not open camera!");
+        for (int i = 0; i <= 10; ++i) {
+            if (i == idx) continue;
+            if (cap.open(i, cv::CAP_V4L2)) {
+                spdlog::warn("Fallback successful: opened camera at index {}", i);
+                idx = i;
+                break;
+            }
+            if (!cap.isOpened()) {
+                throw std::runtime_error("Could not open camera at index " + std::to_string(idx));
+            }
+        }
     }
     createGlTexture();
     captureThread = std::thread(&CameraInput::captureLoop, this);
